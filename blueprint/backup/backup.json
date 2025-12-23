@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "module": "agent_backup_manager",
+  "description": "Backup subsystem for Universal Agent v1. Creates timestamped mirrored backups before AI writes.",
+  "location": {
+    "backup_manager": "src/agent/backup/manager.js",
+    "backup_utils": "src/agent/backup/utils.js"
+  },
+  "responsibilities": [
+    "create timestamped backup root",
+    "mirror project folder structure",
+    "write RAW backups",
+    "update context.backupPaths",
+    "skip in dryRun",
+    "hybrid IO (MCP first, FS fallback)"
+  ],
+  "public_api": {
+    "initBackupSession": {
+      "signature": "function initBackupSession(context): string"
+    },
+    "buildBackupPath": {
+      "signature": "function buildBackupPath(context, filePath): string"
+    },
+    "writeBackup": {
+      "signature": "async function writeBackup(context, filePath, content)"
+    },
+    "ensureDir": {
+      "signature": "async function ensureDir(path)"
+    }
+  },
+  "data_structures": {
+    "BackupSession": {
+      "fields": ["root", "timestamp", "files"]
+    }
+  },
+  "workflow_v1": [
+    "files selected",
+    "init backup session",
+    "compute backup paths",
+    "write backups",
+    "write AI outputs only after backups"
+  ],
+  "backup_rules_v1": [
+    "no overwrite existing backups",
+    "no backup in dryRun",
+    "mirrored relative paths only",
+    "raw content only",
+    "recursive directory creation"
+  ],
+  "integration_with_steps": {
+    "backup": "uses writeBackup and buildBackupPath per file"
+  },
+  "hybrid_io_strategy": {
+    "preferred": "MCP",
+    "fallback": "FS"
+  },
+  "error_conditions": [
+    "backup root exists",
+    "missing file",
+    "write failure",
+    "invalid path",
+    "dryRun attempted backup"
+  ],
+  "notes_v2": [
+    "compression",
+    "cleanup",
+    "restore command",
+    "per-step backups",
+    "checksums"
+  ],
+  "test_plan": [
+    "session created correctly",
+    "paths mirrored",
+    "backup content correct",
+    "dryRun blocks backups",
+    "MCP success",
+    "FS fallback",
+    "no overwrites",
+    "context updated"
+  ]
+}

@@ -1,0 +1,6 @@
+name: scan-project
+version: 1
+description: Scan project directory and collect metadata.
+
+steps:
+  - type: scan_project

@@ -1,0 +1,139 @@
+version: 1
+module: agent_engine_executor
+description: >
+  Core executor responsible for running a recipe (list of ordered steps) with a
+  shared context object. Executes steps sequentially, handles errors, manages
+  hybrid IO (MCP + FS), and integrates logging, backups, and validation.
+
+location: src/agent/engine/executor.js
+
+responsibilities:
+  - load recipe definition (list of steps with parameters)
+  - initialize run context (session id, timestamp, file targets, logger, etc.)
+  - execute steps sequentially (no branching in v1)
+  - call each step with:
+      - context (mutable)
+      - step parameters
+  - catch and report errors gracefully
+  - ensure backup/validation/write phases are executed in safety (even if step fails)
+  - record per-step execution logs
+  - return a final RunResult object
+
+public_api:
+  runRecipe:
+    description: Executes a named recipe with given options.
+    signature: >
+      async function runRecipe(recipeName: string, options: object): Promise<RunResult>
+    parameters:
+      recipeName:
+        type: string
+        description: Name of recipe YAML/JSON file located in src/agent/recipes.
+      options:
+        type: object
+        description: |
+          Additional configuration passed to context:
+            - targetFiles: string[] | null
+            - rootPath: string
+            - dryRun: boolean
+            - verbose: boolean
+            - mcpOnly: boolean (optional)
+            - fsFallback: boolean (default true)
+    returns:
+      type: RunResult
+      description: Completed context including logs, selected files, AI outputs, and errors.
+
+  loadRecipe:
+    description: Loads recipe YAML/JSON by name.
+    signature: >
+      function loadRecipe(name: string): Promise<RecipeDefinition>
+    notes: >
+      Resolution order:
+        - src/agent/recipes/{name}.yaml
+        - src/agent/recipes/{name}.json
+
+data_structures:
+  RecipeDefinition:
+    type: object
+    fields:
+      - name: string
+      - steps: array of StepDefinition
+      - parameters: optional map
+
+  StepDefinition:
+    type: object
+    fields:
+      - id: string
+      - using: string   # step module name, e.g. "scan_project", "read", "ai_doc_header"
+      - params: optional map
+
+  RunContext:
+    description: >
+      Primary object passed through all steps. Mutable. Contains metadata,
+      results of scanner, intermediate outputs, file contents, AI suggestion, validation
+      results, backup paths, logs, and final status.
+    fields:
+      sessionId: string
+      timestamp: ISO8601 string
+      options: object
+      rootPath: string
+      targetFiles: string[]
+      selectedFiles: string[]
+      filesContent: map(filePath -> string)
+      aiOutputs: map(filePath -> string)
+      validationResults: map(filePath -> boolean)
+      backupPaths: map(filePath -> string)
+      logs: array(string)
+      errors: array(object)
+      state: map
+
+  RunResult:
+    description: Final output returned to bridge or caller.
+    fields:
+      success: boolean
+      logs: array(string)
+      errors: array(object)
+      updatedFiles: string[]
+      backupFiles: string[]
+      context: RunContext
+
+execution_order:
+  - loadRecipe
+  - initContext
+  - for each step:
+      - resolve step module (src/agent/steps/*)
+      - pass context + params
+      - write per-step logs
+      - break on critical error
+  - finalization (write logs to .ai/, return RunResult)
+
+error_handling:
+  non_critical:
+    - missing files
+    - empty AI output
+    - validation fail
+  critical:
+    - recipe not found
+    - step module missing
+    - IO failure (writeFile/backup)
+    - MCP connection fatal error
+
+logging:
+  - every step execution
+  - failures with stack trace
+  - summary line at end
+  - logs saved to:
+      .ai/logs/{timestamp}.log
+
+notes_v2:
+  - Add branching, loops, conditions
+  - Add parallel per-file execution
+  - Add rollback after failed writes
+  - Add semantic diff
+
+test_plan:
+  - ensure recipe loads
+  - ensure steps execute sequentially
+  - ensure context mutates correctly
+  - ensure backup/writes attach to context
+  - ensure logs persisted to .ai
+  - seal when runRecipe("docOnly") works end-to-end

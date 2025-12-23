@@ -1,0 +1,118 @@
+version: 1
+module: agent_recipes_schema
+description: >
+  Recipe subsystem for Universal Agent v1. Recipes define high-level workflows
+  by specifying ordered execution steps, parameters, target files, and behaviors.
+  Recipes are written in YAML and parsed into RecipeDefinition objects.
+
+location:
+  parser: src/agent/recipes/parser.js
+  builtin: src/agent/recipes/builtin/
+
+responsibilities:
+  - parse recipe YAML files into structured RecipeDefinition objects
+  - validate recipe keys, step definitions, and parameter structures
+  - provide error messages for malformed recipes
+  - load built-in recipes from src/agent/recipes/builtin/
+  - support custom recipes from project root (.ai/recipes/)
+  - merge user options (CLI/bridge) with recipe configuration
+
+recipe_structure:
+  top_level_keys:
+    - name: string
+    - description: string
+    - targetFiles: array(string) | string | null
+    - steps: array(StepSpec)
+    - options: RunOptionsOverride (optional)
+
+  StepSpec:
+    fields:
+      - using: string               # step name, e.g. "scan_project"
+      - id: string (optional)       # custom identifier; auto-generated if omitted
+      - params: object (optional)   # step-specific config
+      - if: string (optional)       # v2: conditional execution
+
+  RunOptionsOverride:
+    description: >
+      Optional override for run options; merged into context.options
+    fields:
+      - dryRun: boolean
+      - verbose: boolean
+      - mcpOnly: boolean
+      - fsFallback: boolean
+
+public_api:
+  loadRecipe:
+    signature: >
+      async function loadRecipe(recipeName: string): Promise<RecipeDefinition>
+
+  parseRecipeYaml:
+    signature: >
+      function parseRecipeYaml(yamlContent: string): RecipeDefinition
+
+  validateRecipe:
+    signature: >
+      function validateRecipe(def: RecipeDefinition): void
+
+builtin_recipes_v1:
+  docOnly:
+    file: docOnly.yaml
+    purpose: >
+      Generate documentation headers and write only safe doc-only changes.
+    steps:
+      - { using: scan_project }
+      - { using: select_files }
+      - { using: read }
+      - { using: ai_doc_header }
+      - { using: validate }
+      - { using: backup }
+      - { using: write }
+      - { using: log }
+
+  analyzeOnly:
+    file: analyzeOnly.yaml
+    purpose: >
+      Scan and analyze project; no writes, no AI.
+    steps:
+      - { using: scan_project }
+      - { using: select_files }
+      - { using: read }
+      - { using: log }
+    options:
+      dryRun: true
+
+errors:
+  - unknown_step: step "X" not found in step registry
+  - missing_name: recipe must have a "name"
+  - empty_steps: recipe must contain steps array
+  - invalid_yaml: YAML parse error
+  - invalid_params: params must be object if present
+
+rules_v1:
+  - steps MUST be executed sequentially
+  - no branching or loops
+  - recipe MUST declare name
+  - options override merged into context.options
+  - all step names must correspond to existing modules
+  - StepSpec.using is required
+  - id is optional; auto-generated from step index
+
+file_locations:
+  builtin_directory: src/agent/recipes/builtin/
+  custom_directory: .ai/recipes/
+
+notes_v2:
+  - conditional execution via "if"
+  - variable substitution in params
+  - macros (grouped steps)
+  - composite recipes
+  - recipe inheritance
+  - advanced file selection expressions
+
+test_plan:
+  - valid docOnly recipe loads correctly
+  - unknown step throws error
+  - missing name throws error
+  - params validated correctly
+  - custom recipe overrides builtin
+  - options merged into context options

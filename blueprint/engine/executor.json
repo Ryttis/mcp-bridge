@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "module": "agent_engine_executor",
+  "description": "Core executor responsible for running a recipe (list of ordered steps) with a shared context object. Executes steps sequentially, handles errors, manages hybrid IO (MCP + FS), and integrates logging, backups, and validation.",
+  "location": "src/agent/engine/executor.js",
+  "responsibilities": [
+    "load recipe definition (list of steps with parameters)",
+    "initialize run context (session id, timestamp, file targets, logger, etc.)",
+    "execute steps sequentially (no branching in v1)",
+    "call each step with: context (mutable), step parameters",
+    "catch and report errors gracefully",
+    "ensure backup/validation/write phases are executed in safety",
+    "record per-step execution logs",
+    "return a final RunResult object"
+  ],
+  "public_api": {
+    "runRecipe": {
+      "description": "Executes a named recipe with given options.",
+      "signature": "async function runRecipe(recipeName: string, options: object): Promise<RunResult>",
+      "parameters": {
+        "recipeName": {
+          "type": "string",
+          "description": "Name of recipe YAML/JSON file located in src/agent/recipes."
+        },
+        "options": {
+          "type": "object",
+          "description": "Configuration passed to context (targetFiles, rootPath, dryRun, verbose, mcpOnly, fsFallback)."
+        }
+      },
+      "returns": {
+        "type": "RunResult",
+        "description": "Completed context including logs, selected files, AI outputs, and errors."
+      }
+    },
+    "loadRecipe": {
+      "description": "Loads recipe YAML/JSON by name.",
+      "signature": "function loadRecipe(name: string): Promise<RecipeDefinition>",
+      "notes": "Resolution order: YAML first, then JSON."
+    }
+  },
+  "data_structures": {
+    "RecipeDefinition": {
+      "type": "object",
+      "fields": ["name", "steps", "parameters"]
+    },
+    "StepDefinition": {
+      "type": "object",
+      "fields": ["id", "using", "params"]
+    },
+    "RunContext": {
+      "description": "Primary object passed through all steps. Mutable.",
+      "fields": [
+        "sessionId",
+        "timestamp",
+        "options",
+        "rootPath",
+        "targetFiles",
+        "selectedFiles",
+        "filesContent",
+        "aiOutputs",
+        "validationResults",
+        "backupPaths",
+        "logs",
+        "errors",
+        "state"
+      ]
+    },
+    "RunResult": {
+      "fields": [
+        "success",
+        "logs",
+        "errors",
+        "updatedFiles",
+        "backupFiles",
+        "context"
+      ]
+    }
+  },
+  "execution_order": [
+    "loadRecipe",
+    "initContext",
+    "execute each step sequentially",
+    "finalization: write logs to .ai/, return RunResult"
+  ],
+  "error_handling": {
+    "non_critical": [
+      "missing files",
+      "empty AI output",
+      "validation fail"
+    ],
+    "critical": [
+      "recipe not found",
+      "step module missing",
+      "IO failure",
+      "MCP connection fatal error"
+    ]
+  },
+  "logging": {
+    "stores": ".ai/logs/{timestamp}.log",
+    "includes": ["step executions", "failures", "summary"]
+  },
+  "notes_v2": [
+    "branching/loops",
+    "parallel execution",
+    "rollback",
+    "semantic diff"
+  ],
+  "test_plan": [
+    "recipe loads",
+    "steps run sequentially",
+    "context mutates correctly",
+    "backup/writes attached",
+    "logs written to .ai",
+    "docOnly runs end-to-end"
+  ]
+}

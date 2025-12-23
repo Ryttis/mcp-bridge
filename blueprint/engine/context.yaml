@@ -1,0 +1,160 @@
+version: 1
+module: agent_engine_context
+description: >
+  RunContext object used across the entire Universal Agent pipeline. Tracks state,
+  selected files, raw content, AI outputs, validation results, backup paths, errors,
+  logs, and run-level metadata. RunContext is mutable and shared between all steps.
+
+location: src/agent/engine/context.js
+
+responsibilities:
+  - initialize new RunContext for each runRecipe invocation
+  - store all mutable data during recipe execution
+  - provide safe, minimal methods for updating logs, errors, and state
+  - expose read-only view for RunResult
+  - track timestamps and session data
+  - ensure strict separation between:
+      - raw loaded file content
+      - AI-generated output
+      - validated & approved output
+      - backup paths
+  - integrate hybrid IO flags (mcpOnly, fsFallback)
+  - guarantee consistency and immutability of runId/timestamp/provenance metadata
+
+public_api:
+  createContext:
+    description: Initialize a new mutable RunContext.
+    signature: >
+      function createContext(options: RunOptions): RunContext
+    parameters:
+      options:
+        type: RunOptions
+        description: User-supplied run configuration merged with defaults.
+
+  updateContext:
+    description: Safe context mutation helper.
+    signature: >
+      function updateContext(context: RunContext, mutations: object): void
+
+  addLog:
+    description: Append a log entry.
+    signature: >
+      function addLog(context: RunContext, message: string): void
+
+  addError:
+    description: Append an error entry.
+    signature: >
+      function addError(context: RunContext, error: object | string): void
+
+data_structures:
+  RunOptions:
+    type: object
+    fields:
+      targetFiles: array(string) | null
+      rootPath: string
+      dryRun: boolean
+      verbose: boolean
+      mcpOnly: boolean
+      fsFallback: boolean
+    defaults:
+      dryRun: false
+      verbose: false
+      mcpOnly: false
+      fsFallback: true
+
+  RunContext:
+    description: >
+      Core object passed to all steps. Mutable, but only via helpers.
+    fields:
+      # identity
+      sessionId: string
+      timestamp: ISO8601 string
+
+      # user config
+      options: RunOptions
+
+      # pipeline data
+      recipeName: string
+      steps: array(StepExecution)
+
+      # file selection
+      rootPath: string
+      targetFiles: array(string)
+      selectedFiles: array(string)
+
+      # content storage
+      filesContent:
+        type: map(file -> rawContent)
+      aiOutputs:
+        type: map(file -> aiImprovedContent)
+      validatedOutputs:
+        type: map(file -> safeContent)
+      backupPaths:
+        type: map(file -> backupFilePath)
+
+      # results
+      validationResults: map(file -> boolean)
+      updatedFiles: array(string)
+      backupFiles: array(string)
+
+      # observability
+      logs: array(string)
+      errors: array(object)
+
+      # mutable state used by steps
+      state:
+        type: object
+        example: |
+          {
+            scan: {...},
+            plan: {...},
+            transforms: {...}
+          }
+
+initialization_order:
+  - generate sessionId (uuid v4)
+  - create timestamp (ISO8601)
+  - merge RunOptions with defaults
+  - set recipeName
+  - initialize empty arrays/maps:
+      selectedFiles, filesContent, aiOutputs, validatedOutputs,
+      backupPaths, validationResults, updatedFiles, backupFiles,
+      logs, errors, steps
+  - set rootPath
+  - set targetFiles from options
+  - initialize state = {}
+
+rules_v1:
+  - steps MUST NOT write to updatedFiles directly
+  - only write_step (in primitives) adds to updatedFiles
+  - AI steps MUST NOT overwrite raw content
+  - backupPaths MUST be set before writing files
+  - validation MUST be executed before write unless dryRun=true
+  - dryRun forbids writing and backup creation
+  - context.state is step-private and free-form
+
+immutability_guarantees:
+  - sessionId immutable
+  - timestamp immutable
+  - recipeName immutable
+  - rootPath immutable
+  - options immutable
+
+persistence:
+  - final context dumps to:
+      .ai/runs/{timestamp}.json
+  - contains sanitized version (no raw AI prompts or credentials)
+
+notes_v2:
+  - context diffing
+  - undo/rollback states
+  - context snapshots per step
+  - context merging for multi-agent runs
+
+test_plan:
+  - createContext returns a valid context with defaults
+  - updateContext mutates fields correctly
+  - addLog appends lines
+  - addError appends errors
+  - immutables remain unchanged
+  - context saved to .ai/runs on completion

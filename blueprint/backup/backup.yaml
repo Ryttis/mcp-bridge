@@ -1,0 +1,107 @@
+version: 1
+module: agent_backup_manager
+description: >
+  Backup subsystem for Universal Agent v1. Creates timestamped, mirrored backups
+  of all files targeted for modification. Integrates with RunContext and supports
+  hybrid IO (MCP + filesystem). Ensures safety before any writes to disk.
+
+location:
+  backup_manager: src/agent/backup/manager.js
+  backup_utils: src/agent/backup/utils.js
+
+responsibilities:
+  - create timestamped backup root directory:
+      .mcp_backups/{timestamp}/
+  - mirror project directory structure under backup root
+  - backup raw original content before any write occurs
+  - update context.backupPaths and context.backupFiles
+  - ensure backups are skipped in dryRun
+  - perform safe writes using MCP (preferred) then FS fallback
+  - ensure parent directories exist before write
+  - protect against overwriting existing backups
+
+public_api:
+  initBackupSession:
+    description: Create timestamped backup root for this run.
+    signature: >
+      function initBackupSession(context: RunContext): string
+    returns: backupRootPath
+
+  buildBackupPath:
+    description: Compute backup file location mirroring original structure.
+    signature: >
+      function buildBackupPath(context: RunContext, filePath: string): string
+
+  writeBackup:
+    description: Write one file's raw original content to backup path.
+    signature: >
+      async function writeBackup(context: RunContext, filePath: string, content: string): Promise<void>
+
+  ensureDir:
+    description: Ensure parent directory exists (recursive).
+    signature: >
+      async function ensureDir(path: string): Promise<void>
+
+data_structures:
+  BackupSession:
+    fields:
+      root: string               # e.g. .mcp_backups/2025-11-15_20-17-33/
+      timestamp: string          # matches context.timestamp
+      files: array(string)       # relative paths of backed-up files
+
+workflow_v1:
+  - pipeline selects files
+  - before writing:
+      - initBackupSession(context)
+      - compute backup path for each file
+      - write backup using hybrid IO
+  - write.js step checks:
+      - backup MUST exist, unless dryRun
+      - validation MUST pass
+
+backup_rules_v1:
+  - NEVER overwrite an existing backup (fail fast)
+  - NEVER write backup in dryRun mode
+  - ALWAYS preserve relative path mirror:
+      src/a/b/c.js → .mcp_backups/{ts}/src/a/b/c.js
+  - MUST create parent directories recursively
+  - backups MUST store RAW content, not AI-generated output
+
+integration_with_steps:
+  - backup step:
+      - loops selectedFiles
+      - calls writeBackup for each
+      - stores backupPaths in context
+      - updates context.backupFiles
+
+hybrid_io_strategy:
+  preferred: MCP (core_writeFile)
+  fallback: local FS write
+  logging:
+    - log MCP errors but recover via FS fallback
+    - success or failure logged per-file
+
+error_conditions:
+  - backupRoot already exists (unexpected conflict)
+  - file not found
+  - write failure in both MCP and FS
+  - invalid file path
+  - dryRun mode but backup attempted
+
+notes_v2:
+  - backup compression (zip/tar)
+  - pruning older backups
+  - verify backup integrity via checksum
+  - restore utility: mcp restore <file>
+  - diff viewer integration
+  - backups-per-step (instead of single run)
+
+test_plan:
+  - backup session root created correctly
+  - mirrored path resolution correct
+  - backup writes raw content
+  - no backups in dryRun mode
+  - MCP write success → OK
+  - MCP failure → FS fallback works
+  - conflicting backup names blocked
+  - context.backupPaths populated accurately

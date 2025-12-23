@@ -1,0 +1,116 @@
+version: 1
+module: agent_validation_layer
+description: >
+  Validation subsystem for Universal Agent v1. Ensures AI-generated output is safe
+  by comparing the original file content with the AI-transformed version. Only
+  documentation header differences are allowed. Any violation fails the pipeline.
+
+location: src/agent/validation/
+
+responsibilities:
+  - compare rawContent (original file) with aiOutput (AI-modified file)
+  - detect header block location using commentStyle rules
+  - verify EXACTLY ONE header exists in output
+  - verify output code beyond header is byte-for-byte identical to input
+  - detect illegal changes:
+      - variable/function renames
+      - reordering
+      - code removal or addition
+      - formatting changes outside header
+      - markdown fences or commentary
+  - record validation outcome in:
+      context.validationResults[filePath]
+
+public_api:
+  validateDocOnly:
+    description: >
+      Validate that AI output differs from original only in the header block.
+    signature: >
+      function validateDocOnly(original: string, aiOutput: string, options: ValidationOptions): ValidationResult
+
+  detectHeaderBlock:
+    description: Locate header region in a file using comment style heuristic.
+    signature: >
+      function detectHeaderBlock(content: string, commentStyle: string): HeaderRegion
+
+  normalizeWhitespace:
+    description: Normalize whitespace for comparison inside header.
+    signature: >
+      function normalizeWhitespace(text: string): string
+
+data_structures:
+  ValidationOptions:
+    fields:
+      - language: string
+      - commentStyle: string
+      - allowFormattingInsideHeader: boolean (default: true)
+
+  ValidationResult:
+    fields:
+      - isValid: boolean
+      - errors: array(string)
+      - headerRegion: HeaderRegion
+      - originalHash: string
+      - aiHash: string
+
+  HeaderRegion:
+    fields:
+      - startLine: number
+      - endLine: number
+      - exists: boolean
+
+validation_rules_v1:
+  header_rules:
+    - exactly one header in output
+    - zero or one header in input
+    - header must start at line 1 (after optional shebang)
+    - header must use commentStyle provided by AI module
+
+  allowed_differences:
+    - header block can differ entirely
+    - blank line after header allowed
+
+  forbidden_differences:
+    - ANY change outside header block
+    - added or removed code lines
+    - reordered statements
+    - renamed identifiers
+    - inserted markdown
+    - inserted comments outside header
+    - formatting changes outside header
+
+checksum_strategy:
+  - compute SHA1 of:
+      - original content without header
+      - AI output without header
+  - must match exactly
+
+integration_with_steps:
+  - validate step:
+      - calls validateDocOnly for each selected file
+      - updates context.validationResults
+      - pipeline stops on first invalid file
+
+error_conditions:
+  - no header found in output
+  - multiple headers found
+  - header not at top of file
+  - output contains markdown (``` or ***)
+  - SHA1 mismatch outside header
+  - illegal changes detected
+
+notes_v2:
+  - safe refactor mode (rename allowed)
+  - semantic diffing per language (JS, PHP, etc.)
+  - AST-based validation
+  - configurable strictness levels
+
+test_plan:
+  - valid header replacement passes
+  - header-only change in JS passes
+  - insertion of a comment outside header fails
+  - whitespace-only change outside header fails
+  - markdown in output fails
+  - multiple headers fail
+  - code reordering fails
+  - identifier rename fails

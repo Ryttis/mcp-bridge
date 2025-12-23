@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "module": "agent_steps_primitives",
+  "description": "Primitive steps used in Universal Agent v1. Each step exports run(context, params).",
+  "location": "src/agent/steps/primitives/",
+  "steps": {
+    "scan_project": {
+      "file": "scan_project.js",
+      "description": "Scan project directory and collect metadata.",
+      "inputs": ["context.rootPath"],
+      "outputs": ["context.state.scan.files"],
+      "modifies": ["context.state.scan"],
+      "error_conditions": ["missing rootPath"]
+    },
+    "select_files": {
+      "file": "select_files.js",
+      "description": "Select files by patterns or targetFiles.",
+      "inputs": ["context.state.scan.files", "params.patterns", "options.targetFiles"],
+      "outputs": ["context.selectedFiles"],
+      "modifies": ["context.selectedFiles"],
+      "rules": [
+        "must skip binary files",
+        "must skip >1MB",
+        "support glob/path/ext filters"
+      ]
+    },
+    "read": {
+      "file": "read.js",
+      "description": "Read raw content via MCP or FS fallback.",
+      "inputs": ["context.selectedFiles"],
+      "outputs": ["context.filesContent[file]"],
+      "modifies": ["context.filesContent"],
+      "rules": ["must log MCP failures", "must not alter raw content"]
+    },
+    "ai_doc_header": {
+      "file": "ai_doc_header.js",
+      "description": "Generate doc-only header via OpenAI.",
+      "inputs": ["context.filesContent[file]"],
+      "outputs": ["context.aiOutputs[file]"],
+      "modifies": ["context.aiOutputs"],
+      "rules": [
+        "only header allowed",
+        "no logic changes",
+        "one header only",
+        "no markdown"
+      ],
+      "error_conditions": ["empty output", "markdown detected"]
+    },
+    "validate": {
+      "file": "validate.js",
+      "description": "Ensure AI output is doc-only.",
+      "inputs": ["context.filesContent", "context.aiOutputs"],
+      "outputs": ["context.validationResults[file]"],
+      "modifies": ["context.validationResults"],
+      "rules": [
+        "header differences only",
+        "no logic changes",
+        "header count = 1"
+      ]
+    },
+    "backup": {
+      "file": "backup.js",
+      "description": "Write raw file backups to .mcp_backups.",
+      "inputs": ["context.selectedFiles", "context.filesContent"],
+      "outputs": ["context.backupPaths[file]", "context.backupFiles"],
+      "modifies": ["context.backupPaths", "context.backupFiles"],
+      "rules": ["no backup in dryRun", "create dirs recursively"]
+    },
+    "write": {
+      "file": "write.js",
+      "description": "Write validated AI outputs.",
+      "inputs": ["context.validatedOutputs"],
+      "outputs": ["context.updatedFiles"],
+      "modifies": ["context.updatedFiles"],
+      "rules": [
+        "write only if validation passed",
+        "write only if not dryRun",
+        "MCP first, FS fallback"
+      ]
+    },
+    "log": {
+      "file": "log.js",
+      "description": "Append operational logs.",
+      "inputs": ["context.logs"],
+      "outputs": ["context.logs"],
+      "modifies": ["context.logs"]
+    }
+  },
+  "implementation_rules": [
+    "each step exports run(context, params)",
+    "steps must be idempotent",
+    "wrap in try/catch",
+    "log via context.logs",
+    "must not mutate immutables"
+  ],
+  "notes_v2": [
+    "composite steps",
+    "conditional logic",
+    "concurrency"
+  ],
+  "test_plan": [
+    "scan_project works",
+    "select_files works",
+    "read works",
+    "AI header safe",
+    "validation strict",
+    "backup mirrors tree",
+    "write only valid",
+    "log appends correctly"
+  ]
+}

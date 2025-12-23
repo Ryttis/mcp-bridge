@@ -1,0 +1,107 @@
+version: 1
+module: agent_engine_pipeline
+description: >
+  Pipeline subsystem for Universal Agent v1. Responsible for resolving step modules,
+  invoking them in strict sequential order, passing context and params, and aggregating
+  their results. The pipeline is executed by executor.js but defined here as a separate
+  module for modularity.
+
+location: src/agent/engine/pipeline.js
+
+responsibilities:
+  - receive RecipeDefinition from executor
+  - for each step:
+      - resolve step implementation from src/agent/steps
+      - create a StepExecution object
+      - call step.run(context, params)
+      - catch failures
+      - record step results into context
+      - determine if pipeline should continue or stop
+  - emit structured per-step logs
+
+public_api:
+  runPipeline:
+    description: Execute ordered steps from a recipe.
+    signature: >
+      async function runPipeline(recipe: RecipeDefinition, context: RunContext): Promise<PipelineResult>
+    parameters:
+      recipe:
+        type: RecipeDefinition
+        description: Parsed recipe with steps[] array.
+      context:
+        type: RunContext
+        description: Mutable context passed to each step.
+
+    returns:
+      type: PipelineResult
+      description: Summary of per-step execution and final status.
+
+data_structures:
+  StepExecution:
+    description: Metadata about a single step invocation.
+    fields:
+      id: string
+      using: string
+      start: ISO8601 string
+      end: ISO8601 string
+      duration_ms: number
+      success: boolean
+      error: string | null
+      params: object
+      logs: array(string)
+
+  PipelineResult:
+    description: Final output for pipeline (not to be confused with RunResult).
+    fields:
+      steps: array(StepExecution)
+      success: boolean
+      errors: array(string)
+
+step_resolution:
+  search_order:
+    - src/agent/steps/{using}.js
+    - src/agent/steps/primitives/{using}.js
+    - src/agent/steps/ai/{using}.js
+    - src/agent/steps/scanner/{using}.js
+  error_if_missing: true
+  v2_notes: allow fallback groups and aliases
+
+step_execution:
+  process:
+    - record start timestamp
+    - import module (dynamic import)
+    - ensure module has exported 'run' method
+    - invoke `await run(context, params)`
+    - record end timestamp and duration
+    - attach results to context.logs
+  continue_on_failure: false  # v1: pipeline stops on first critical error
+
+logging:
+  - each step execution recorded as StepExecution
+  - pipeline summary appended to context.logs
+  - log lines written into .ai/logs/{timestamp}.log by executor
+
+error_handling:
+  step_missing:
+    type: critical
+    message: "Step module not found"
+  step_runtime_error:
+    type: critical
+    message: "Step execution failed"
+  param_errors:
+    type: non_critical
+    message: "Invalid or missing params"
+
+extensibility_v2:
+  - allow "continue_on_failure" configurable per step
+  - introduce branching logic via "if" and "when" keys
+  - add output assignment (context.state.foo = result)
+  - groups of steps (macros)
+
+test_plan:
+  - pipeline with 1 step runs successfully
+  - pipeline with 3 steps mutates context correctly
+  - missing step triggers critical error
+  - logs and StepExecution created correctly
+  - pipeline stops at first failing step
+  - seal when docOnly recipe pipeline runs through all steps correctly

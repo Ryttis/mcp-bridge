@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "module": "agent_bridge_integration",
+  "description": "Integration layer between Universal Agent and bridge.js CLI.",
+  "location": {
+    "cli": "src/agent/integration/bridge.js",
+    "dispatcher": "src/agent/integration/dispatcher.js"
+  },
+  "responsibilities": [
+    "parse CLI commands",
+    "dispatch commands to recipes",
+    "construct RunOptions",
+    "invoke executor",
+    "print console results",
+    "handle errors",
+    "write persistent logs"
+  ],
+  "supported_commands_v1": {
+    "analyze": {
+      "recipe": "analyzeOnly",
+      "args": ["<file>"]
+    },
+    "improve": {
+      "recipe": "docOnly",
+      "args": ["<file>", "[instruction]"]
+    },
+    "run-recipe": {
+      "args": ["<name>"]
+    },
+    "run": {
+      "args": ["<recipe>", "--files"]
+    }
+  },
+  "cli_flags": [
+    "--dry",
+    "--verbose",
+    "--mcp-only",
+    "--fs-fallback",
+    "--pattern",
+    "--recipe"
+  ],
+  "command_flow_v1": [
+    "parse CLI",
+    "resolve recipe",
+    "apply overrides",
+    "load recipe",
+    "run executor",
+    "print summary",
+    "write logs",
+    "exit with code"
+  ],
+  "output_formatting": {
+    "banner": "🧩 Universal Agent — Starting recipe: {name}",
+    "summary": ["files", "valid", "invalid", "backups", "updated"],
+    "errors": "red",
+    "success": "green"
+  },
+  "error_conditions": [
+    "unknown command",
+    "recipe not found",
+    "missing file",
+    "invalid pattern",
+    "executor error",
+    "validation error"
+  ],
+  "notes_v2": [
+    "autocomplete",
+    "pipeline visualization",
+    "MCP status check",
+    "diff preview"
+  ],
+  "test_plan": [
+    "improve triggers docOnly",
+    "analyze triggers analyzeOnly",
+    "verbose prints logs",
+    "invalid flags rejected",
+    "log path printed"
+  ]
+}

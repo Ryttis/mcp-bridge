@@ -1,0 +1,172 @@
+version: 1
+module: agent_steps_primitives
+description: >
+  Primitive steps used in Universal Agent v1. Each step is a small module exporting
+  a single async run(context, params) function. Steps are atomic operations that
+  the pipeline executor invokes in strict order.
+
+location: src/agent/steps/primitives/
+
+steps:
+  scan_project:
+    file: scan_project.js
+    description: >
+      Scans project directory for all text files, building metadata (type, size,
+      extension, line count, hash). Stores results in context.state.scan.
+    inputs:
+      - context.rootPath
+    outputs:
+      - context.state.scan.files[]
+    modifies:
+      - context.state.scan
+    error_conditions:
+      - rootPath missing or inaccessible
+
+  select_files:
+    file: select_files.js
+    description: >
+      Selects files to process for this run based on options.targetFiles or patterns
+      defined in recipe params. Writes to context.selectedFiles.
+    inputs:
+      - context.state.scan.files
+      - params.patterns (optional)
+      - options.targetFiles (optional)
+    outputs:
+      - context.selectedFiles[]
+    modifies:
+      - context.selectedFiles
+    rules:
+      - must not select files > 1MB
+      - must ignore binary files
+      - must support filters: ext, path, glob patterns
+
+  read:
+    file: read.js
+    description: >
+      Reads content of each selected file using hybrid IO (prefer MCP via core_readFile,
+      fallback to FS). Stores raw content in context.filesContent.
+    inputs:
+      - context.selectedFiles[]
+    outputs:
+      - context.filesContent[filePath]
+    modifies:
+      - context.filesContent
+    rules:
+      - must log MCP read failures and fallback to FS
+      - must not alter raw content
+
+  ai_doc_header:
+    file: ai_doc_header.js
+    description: >
+      Calls AI (OpenAI) to generate doc-only header for each file. Ultra-strict mode ensures
+      no logic changes. Writes output to context.aiOutputs.
+    inputs:
+      - context.filesContent[file]
+    outputs:
+      - context.aiOutputs[file]
+    modifies:
+      - context.aiOutputs
+    rules:
+      - must not modify raw content
+      - header must be placed at top
+      - no reordering or logic changes
+      - one header only
+    error_conditions:
+      - empty AI output
+      - AI output contains markdown or commentary
+
+  validate:
+    file: validate.js
+    description: >
+      Compares raw content and AI output to ensure doc-only transformation. Prevents logic
+      drift, reordering, or unexpected changes. Writes boolean results to context.validationResults.
+    inputs:
+      - context.filesContent
+      - context.aiOutputs
+    outputs:
+      - context.validationResults[file]
+    modifies:
+      - context.validationResults
+    rules:
+      - minimal diff: only header differences allowed
+      - if changed lines not in header region → fail
+      - if header count != 1 → fail
+      - if logic changed → fail
+
+  backup:
+    file: backup.js
+    description: >
+      Writes backup of RAW content for all files scheduled to write. Uses timestamped
+      folder under .mcp_backups/{timestamp}/mirrored/path/file.ext.
+    inputs:
+      - context.selectedFiles[]
+      - context.filesContent
+    outputs:
+      - context.backupPaths[file]
+      - context.backupFiles[]
+    modifies:
+      - context.backupPaths
+      - context.backupFiles
+    rules:
+      - create directories recursively
+      - no backup in dryRun mode
+
+  write:
+    file: write.js
+    description: >
+      Writes validated AI output to file using hybrid IO. Updates context.updatedFiles.
+    inputs:
+      - context.validatedOutputs
+    outputs:
+      - updated files on disk
+      - context.updatedFiles[]
+    modifies:
+      - context.updatedFiles
+    rules:
+      - write only if validation passed
+      - write only if not dryRun
+      - MCP first, FS fallback
+
+  log:
+    file: log.js
+    description: >
+      Writes step-level logs and final summary to context.logs. Executor handles final
+      persistence to .ai/logs.
+    inputs:
+      - context.logs
+    outputs:
+      - additional log lines
+    modifies:
+      - context.logs
+
+implementation_rules:
+  - all primitive steps export: async function run(context, params)
+  - steps must be idempotent for identical context state
+  - steps must not throw uncaught errors (wrap in try/catch)
+  - logging must be done via context.logs push
+  - steps must not mutate immutables in context
+  - steps must not create new keys outside:
+      - context.filesContent
+      - context.aiOutputs
+      - context.validatedOutputs
+      - context.backupPaths
+      - context.validationResults
+      - context.selectedFiles
+      - context.updatedFiles
+      - context.state
+
+notes_v2:
+  - introduce composite steps
+  - allow conditional logic
+  - add concurrency for read/AI/write
+
+test_plan:
+  - scan_project finds files and produces metadata
+  - select_files correctly filters by ext/pattern
+  - read loads raw file content via MCP/FS
+  - ai_doc_header generates safe header
+  - validate catches illegal changes
+  - backup mirrors project structure
+  - write updates files only if valid
+  - log appends messages
+  - seal primitive steps when docOnly pipeline passes

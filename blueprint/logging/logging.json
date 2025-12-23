@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "module": "agent_logging_layer",
+  "description": "Logging subsystem for Universal Agent v1.",
+  "location": {
+    "logger": "src/agent/logging/logger.js",
+    "formatter": "src/agent/logging/formatter.js"
+  },
+  "responsibilities": [
+    "maintain context.logs buffer",
+    "provide info/error/step logging helpers",
+    "write persistent logs",
+    "control verbosity",
+    "attach session/recipe metadata",
+    "timestamp all entries"
+  ],
+  "public_api": {
+    "logInfo": {
+      "signature": "function logInfo(context, message, meta?)"
+    },
+    "logError": {
+      "signature": "function logError(context, message, meta?)"
+    },
+    "logStep": {
+      "signature": "function logStep(context, stepId, message)"
+    },
+    "finalizeLogs": {
+      "signature": "async function finalizeLogs(context): Promise<string>"
+    }
+  },
+  "log_entry_structure": [
+    "timestamp",
+    "level",
+    "message",
+    "meta",
+    "stepId",
+    "sessionId",
+    "recipeName"
+  ],
+  "storage": {
+    "directory": ".ai/logs",
+    "filename": "{timestamp}.log",
+    "rotate": false,
+    "overwrite": false
+  },
+  "verbosity_levels": ["silent", "normal", "verbose"],
+  "rules_v1": [
+    "no API keys or prompts leakage",
+    "log counts of files/steps",
+    "log validation summary",
+    "log backup summary",
+    "finalizeLogs must be called"
+  ],
+  "integration_with_engine": {
+    "executor": "logs run start/end, calls finalizeLogs",
+    "pipeline": "logs each step and errors",
+    "steps": "use logStep"
+  },
+  "error_conditions": [
+    "failed log write",
+    "invalid context",
+    "missing timestamp"
+  ],
+  "notes_v2": [
+    "JSON logs",
+    "log index",
+    "viewer UI",
+    "warning levels",
+    "Slack/Telegram integrations"
+  ],
+  "test_plan": [
+    "info/error append",
+    "step logs correct",
+    "final log file written",
+    "timestamps correct",
+    "verbosity works"
+  ]
+}

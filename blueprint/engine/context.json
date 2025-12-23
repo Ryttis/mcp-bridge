@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "module": "agent_engine_context",
+  "description": "RunContext object used across the entire Universal Agent pipeline.",
+  "location": "src/agent/engine/context.js",
+  "responsibilities": [
+    "initialize new RunContext for each run",
+    "store all mutable data during recipe execution",
+    "support safe mutation helpers",
+    "track timestamps and session",
+    "maintain strict separation between raw content / AI output / validated output",
+    "support hybrid IO flags",
+    "write final result into .ai/runs/{timestamp}.json"
+  ],
+  "public_api": {
+    "createContext": {
+      "description": "Initialize new mutable RunContext.",
+      "signature": "function createContext(options: RunOptions): RunContext"
+    },
+    "updateContext": {
+      "description": "Safe mutation helper.",
+      "signature": "function updateContext(context, mutations): void"
+    },
+    "addLog": {
+      "description": "Append log entry.",
+      "signature": "function addLog(context, message): void"
+    },
+    "addError": {
+      "description": "Append error entry.",
+      "signature": "function addError(context, error): void"
+    }
+  },
+  "data_structures": {
+    "RunOptions": {
+      "fields": [
+        "targetFiles",
+        "rootPath",
+        "dryRun",
+        "verbose",
+        "mcpOnly",
+        "fsFallback"
+      ],
+      "defaults": {
+        "dryRun": false,
+        "verbose": false,
+        "mcpOnly": false,
+        "fsFallback": true
+      }
+    },
+    "RunContext": {
+      "fields": {
+        "sessionId": "string",
+        "timestamp": "string",
+        "options": "RunOptions",
+        "recipeName": "string",
+        "steps": "StepExecution[]",
+        "rootPath": "string",
+        "targetFiles": "string[]",
+        "selectedFiles": "string[]",
+        "filesContent": "map<string,string>",
+        "aiOutputs": "map<string,string>",
+        "validatedOutputs": "map<string,string>",
+        "backupPaths": "map<string,string>",
+        "validationResults": "map<string,boolean>",
+        "updatedFiles": "string[]",
+        "backupFiles": "string[]",
+        "logs": "string[]",
+        "errors": "object[]",
+        "state": "object"
+      }
+    }
+  },
+  "initialization_order": [
+    "generate sessionId",
+    "create timestamp",
+    "merge RunOptions",
+    "set recipeName",
+    "init empty arrays and maps",
+    "set rootPath",
+    "set targetFiles",
+    "state = {}"
+  ],
+  "rules_v1": [
+    "steps cannot mutate updatedFiles",
+    "only write_step populates updatedFiles",
+    "AI steps cannot overwrite raw content",
+    "backupPaths must be set before write",
+    "validation required before write",
+    "dryRun disables write & backup",
+    "context.state is free form"
+  ],
+  "immutability_guarantees": [
+    "sessionId",
+    "timestamp",
+    "recipeName",
+    "rootPath",
+    "options"
+  ],
+  "persistence": {
+    "path": ".ai/runs/{timestamp}.json",
+    "notes": "sanitized output"
+  },
+  "notes_v2": [
+    "context diffing",
+    "rollback",
+    "snapshot per step",
+    "multi-agent merges"
+  ],
+  "test_plan": [
+    "context initialization",
+    "context mutation",
+    "addLog",
+    "addError",
+    "immutables remain",
+    "context saved to .ai/runs"
+  ]
+}

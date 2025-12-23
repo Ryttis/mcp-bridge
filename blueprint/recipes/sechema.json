@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "module": "agent_recipes_schema",
+  "description": "Recipe subsystem for Universal Agent v1. Defines YAML schema for workflows.",
+  "location": {
+    "parser": "src/agent/recipes/parser.js",
+    "builtin": "src/agent/recipes/builtin/"
+  },
+  "responsibilities": [
+    "parse YAML recipes",
+    "validate structure",
+    "load builtin and custom recipes",
+    "transform into RecipeDefinition",
+    "merge run options"
+  ],
+  "recipe_structure": {
+    "top_level_keys": [
+      "name",
+      "description",
+      "targetFiles",
+      "steps",
+      "options"
+    ],
+    "StepSpec": {
+      "fields": ["using", "id", "params", "if"]
+    },
+    "RunOptionsOverride": {
+      "fields": ["dryRun", "verbose", "mcpOnly", "fsFallback"]
+    }
+  },
+  "public_api": {
+    "loadRecipe": {
+      "signature": "async function loadRecipe(recipeName): Promise<RecipeDefinition>"
+    },
+    "parseRecipeYaml": {
+      "signature": "function parseRecipeYaml(yamlContent): RecipeDefinition"
+    },
+    "validateRecipe": {
+      "signature": "function validateRecipe(def): void"
+    }
+  },
+  "builtin_recipes_v1": {
+    "docOnly": {
+      "file": "docOnly.yaml",
+      "steps": [
+        "scan_project",
+        "select_files",
+        "read",
+        "ai_doc_header",
+        "validate",
+        "backup",
+        "write",
+        "log"
+      ]
+    },
+    "analyzeOnly": {
+      "file": "analyzeOnly.yaml",
+      "steps": ["scan_project", "select_files", "read", "log"],
+      "options": { "dryRun": true }
+    }
+  },
+  "errors": [
+    "unknown_step",
+    "missing_name",
+    "empty_steps",
+    "invalid_yaml",
+    "invalid_params"
+  ],
+  "rules_v1": [
+    "steps executed sequentially",
+    "name required",
+    "params must be objects",
+    "all steps must exist",
+    "id optional",
+    "options merged into context"
+  ],
+  "file_locations": {
+    "builtin_directory": "src/agent/recipes/builtin/",
+    "custom_directory": ".ai/recipes/"
+  },
+  "notes_v2": [
+    "conditionals",
+    "macros",
+    "recipe inheritance",
+    "variable substitution",
+    "composite recipes"
+  ],
+  "test_plan": [
+    "docOnly loads",
+    "unknown step rejected",
+    "missing name rejected",
+    "bad YAML rejected",
+    "custom recipe overrides builtin"
+  ]
+}

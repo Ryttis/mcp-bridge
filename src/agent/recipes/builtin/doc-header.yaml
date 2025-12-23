@@ -1,0 +1,9 @@
+name: "doc-header"
+steps:
+  - id: selectFiles
+  - id: readFiles
+  - id: backupInit
+  - id: backupFiles
+  - id: docHeaderTransform
+  - id: validateDocOnly
+  - id: writeFiles

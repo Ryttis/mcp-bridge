@@ -1,0 +1,119 @@
+version: 1
+module: agent_bridge_integration
+description: >
+  Integration layer between Universal Agent and bridge.js CLI. Converts user commands
+  into recipe executions, handles execution flow, prints console output, passes file
+  paths and instructions, and routes results back to user.
+
+location:
+  cli: src/agent/integration/bridge.js
+  dispatcher: src/agent/integration/dispatcher.js
+
+responsibilities:
+  - parse command-line arguments from bridge.js
+  - interpret user commands:
+      - analyze <file>
+      - improve <file> [instruction]
+      - run-recipe <recipeName>
+      - run <recipe> --files="..."
+  - create RunOptions based on CLI flags
+  - locate and load proper recipe
+  - invoke executor.runRecipe(recipeName, options)
+  - print structured console output
+  - handle errors gracefully
+  - stream logs during execution (verbose mode)
+  - support future interactive mode with ChatGPT (bridge interactive console)
+
+supported_commands_v1:
+  analyze <file>:
+    description: Analyze one file (read + AI-free inspection).
+    behavior:
+      - uses built-in "analyzeOnly" recipe
+      - targetFiles: [file]
+
+  improve <file> [instruction]:
+    description: Apply “docOnly” recipe to a single file or multiple.
+    behavior:
+      - uses "docOnly" recipe
+      - passes instruction via params.extraInstruction
+      - sets targetFiles from CLI
+
+  run-recipe <name>:
+    description: Run any built-in or custom recipe by name.
+
+  run <recipe> --files="glob":
+    description: Run recipe with explicit file selection.
+
+command_flow_v1:
+  - parse CLI
+  - match command pattern
+  - resolve recipeName
+  - construct options = RunOptionsOverride
+  - call loadRecipe(recipeName)
+  - attach CLI targetFiles or params if needed
+  - runRecipe through executor
+  - show results:
+      - updated files
+      - validation results
+      - backup summary
+      - log summary
+  - print path to persistent log file
+  - exit with code:
+      0 = success
+      1 = validation error
+      2 = runtime error
+
+cli_flags:
+  - --dry: run without write/backup
+  - --verbose: stream step logs to console
+  - --mcp-only: enforce MCP-first IO
+  - --fs-fallback: allow file-system fallback
+  - --pattern: file filter
+  - --recipe: recipe name override
+
+bridge_interactive_support:
+  - integration with existing interactive RPC console
+  - ability to run recipes from inside interactive prompt
+  - ability to show pipeline plan before execution (v2)
+
+integration_with_executor:
+  - calls executor.runRecipe(recipeName, runOptions)
+  - subscribes to pipeline events (v2)
+  - passes context logs to printer
+  - finalizes logs via executor
+
+output_formatting:
+  - consistent banner:
+      "🧩 Universal Agent — Starting recipe: {name}"
+  - summary table:
+      - files processed
+      - valid files
+      - invalid files
+      - backups created
+      - updated files
+  - errors printed in red
+  - success printed in green
+  - persistent logs printed at end
+
+error_conditions:
+  - unknown command
+  - recipe not found
+  - missing file path
+  - invalid pattern
+  - executor errors
+  - validation error (exit code 1)
+
+notes_v2:
+  - autocompletion for recipes
+  - interactive pipeline visualization
+  - real-time MCP server sync checks
+  - multi-file AI preview mode
+  - dry-run with diff preview
+
+test_plan:
+  - improve <file> triggers docOnly recipe
+  - analyze <file> runs analyzeOnly
+  - invalid recipe name rejected
+  - invalid CLI flags rejected
+  - verbose mode streams step logs
+  - persistent log path printed correctly

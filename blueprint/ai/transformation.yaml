@@ -1,0 +1,130 @@
+version: 1
+module: agent_ai_transformation
+description: >
+  AI subsystem for Universal Agent v1. Provides ultra-strict doc-only transformations
+  for text files. Uses OpenAI client, fixed prompts, and strict output constraints.
+  No logic changes are allowed; only a single header is added or normalized.
+
+location:
+  client: src/agent/ai/client.js
+  doc_header: src/agent/ai/docHeader.js
+
+responsibilities:
+  - create and configure OpenAI client from environment variables
+  - expose a single high-level function for doc-only header generation
+  - enforce strict prompt templates for ultra-safe behavior
+  - ensure output is raw code (no markdown, no explanations)
+  - integrate with ai_doc_header step via a simple JS API
+  - handle rate limits and transient errors gracefully
+
+config:
+  env:
+    - name: OPENAI_API_KEY
+      required: true
+      purpose: Authentication for OpenAI client.
+    - name: OPENAI_MODEL_DOC_ONLY
+      required: false
+      default: gpt-4o-mini
+      purpose: Model used for doc-only header generation.
+  defaults:
+    model: gpt-4o-mini
+    temperature: 0.1
+    max_tokens: 2048
+
+public_api:
+  createClient:
+    description: Initialize OpenAI client once per process.
+    signature: >
+      function createClient(): OpenAIClient
+    notes: >
+      Thin wrapper over official OpenAI library. No logic beyond config.
+
+  generateDocHeader:
+    description: >
+      Generate a doc-only header for a given file content, following ultra-strict
+      constraints (no logic changes, one header only).
+    signature: >
+      async function generateDocHeader(input: DocHeaderInput): Promise<string>
+    input:
+      type: DocHeaderInput
+      fields:
+        filePath: string
+        language: string        # detected from extension (js, php, yaml, etc.)
+        commentStyle: string    # "block", "hash", "html", "line"
+        rawContent: string
+        mode: string            # "prepend_only" | "normalize_existing"
+        extraInstruction: string | null
+    output:
+      description: Raw file content including header at the top.
+      rules:
+        - MUST be valid code/text without markdown
+        - MUST contain exactly one header block
+        - MUST NOT change any non-header code
+        - MUST NOT insert explanations outside header
+
+prompt_design:
+  system_prompt: |
+    You are a very strict documentation assistant for a codebase.
+    Your ONLY job is to add or normalize a single documentation header
+    at the very top of the file, describing:
+    - what the file does
+    - key responsibilities
+    - important parameters or side effects
+
+    HARD RULES:
+    - Do NOT change ANY logic.
+    - Do NOT rename variables, functions, or classes.
+    - Do NOT reorder code.
+    - Do NOT change formatting except for the header block.
+    - Output MUST be ONLY the final file content (no markdown, no commentary).
+    - Insert EXACTLY ONE header block using the provided comment style.
+    - If a header already exists, normalize/replace it, but leave everything else untouched.
+
+  user_template: |
+    File path: {filePath}
+    Language: {language}
+    Comment style: {commentStyle}
+    Mode: {mode}
+
+    Original file content:
+    ---
+    {rawContent}
+    ---
+
+    Extra instruction (optional):
+    {extraInstruction}
+
+    Now output ONLY the final file content with the correct single header at the top.
+
+constraints_v1:
+  - no multi-file context (each call is per-file)
+  - no cross-file reasoning
+  - no refactoring suggestions inside header
+  - header should remain concise (3–8 lines)
+  - no annotations about AI or generation itself
+
+error_handling:
+  - if OpenAI returns empty content → throw AIEmptyOutputError
+  - if output contains '```' or markdown fences → throw AIMarkdownDetectedError
+  - if no header is detected → throw AIHeaderMissingError
+  - if more than one header is detected → throw AIMultipleHeadersError
+
+integration_with_steps:
+  - ai_doc_header step:
+      - detects language + commentStyle from file extension
+      - calls generateDocHeader for each selected file
+      - writes output to context.aiOutputs[filePath]
+      - logs summary (success / failure count)
+
+notes_v2:
+  - support different AI modes (analyze-only, refactor-safe)
+  - allow model configuration per recipe
+  - add retry/backoff strategies
+  - add token usage metrics into .ai logs
+
+test_plan:
+  - generateDocHeader adds header to a JS file with no header
+  - generateDocHeader replaces existing header in PHP file, keeps logic same
+  - markdown in output triggers error
+  - multiple headers in output triggers error
+  - empty result triggers error

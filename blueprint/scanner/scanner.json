@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "module": "agent_scanner",
+  "description": "Scanner subsystem for Universal Agent v1. Walks directory, collects metadata for text files.",
+  "location": "src/agent/scanner/",
+  "responsibilities": [
+    "walk project directory",
+    "detect text files",
+    "collect metadata",
+    "skip ignored folders and large files",
+    "store results in context.state.scan.files"
+  ],
+  "public_api": {
+    "scanProject": {
+      "signature": "async function scanProject(rootPath): Promise<FileMeta[]>",
+      "description": "Return metadata for all text files in project."
+    },
+    "detectFileType": {
+      "signature": "function detectFileType(filePath, buffer): FileTypeInfo",
+      "description": "Classify file based on extension and binary detection."
+    },
+    "isBinary": {
+      "signature": "function isBinary(buffer): boolean",
+      "description": "Detect binary files using heuristic."
+    }
+  },
+  "data_structures": {
+    "FileMeta": {
+      "fields": [
+        "path",
+        "relativePath",
+        "size",
+        "extension",
+        "type",
+        "isBinary",
+        "lineCount",
+        "hash",
+        "skipped"
+      ]
+    },
+    "FileTypeInfo": {
+      "fields": ["isBinary", "extension", "type"]
+    }
+  },
+  "behavior_rules_v1": [
+    "max size = 1MB",
+    "skip backups, logs, env, binary files",
+    "hash text files only",
+    "unknown extensions treated as text"
+  ],
+  "ignore_patterns": {
+    "directories": [
+      "node_modules",
+      "vendor",
+      ".git",
+      ".ai",
+      ".mcp_backups",
+      ".DS_Store"
+    ],
+    "files": ["*.png", "*.jpg", "*.pdf", "*.zip", "*.bin", "*.exe", "*.dll"]
+  },
+  "integration_with_steps": {
+    "scan_project": "calls scanProject → writes to context.state.scan.files"
+  },
+  "performance_notes": [
+    "prefer BFS directory traversal",
+    "minimize recursion",
+    "hashing enabled in v1"
+  ],
+  "security_notes": [
+    "never execute code",
+    "treat files as untrusted",
+    "no external network calls"
+  ],
+  "notes_v2": [
+    "symbol extraction",
+    "dependency graph",
+    "language-aware parsing"
+  ],
+  "test_plan": [
+    "basic directory scan",
+    "binary detection",
+    "ignore patterns",
+    "line count accuracy",
+    "classification accuracy",
+    "metadata stored properly"
+  ]
+}

@@ -1,0 +1,124 @@
+version: 1
+module: agent_scanner
+description: >
+  Scanner subsystem for Universal Agent v1. Walks the project directory,
+  collects metadata for all text files, classifies them, and stores results
+  into context.state.scan. This subsystem is lightweight and deterministic.
+
+location: src/agent/scanner/
+
+responsibilities:
+  - walk project directory recursively from context.rootPath
+  - detect which files are considered "text files" (safe for AI)
+  - collect metadata:
+      - path
+      - size (bytes)
+      - extension
+      - MIME category (js, php, yaml, json, text, md, twig, html)
+      - line count
+      - hash (sha1 or md5)
+      - binary flag
+  - ignore:
+      - node_modules/
+      - vendor/
+      - .git/
+      - .ai/
+      - .mcp_backups/
+      - files > 1 MB
+      - binary files
+  - write metadata into:
+      context.state.scan.files[]
+
+public_api:
+  scanProject:
+    description: Scan project folder and return array of FileMeta.
+    signature: >
+      async function scanProject(rootPath: string): Promise<FileMeta[]>
+
+  detectFileType:
+    description: Determine whether file is text, and classify by type.
+    signature: >
+      function detectFileType(filePath: string, rawBuffer: Buffer): FileTypeInfo
+
+  isBinary:
+    description: Lightweight binary detection.
+    signature: >
+      function isBinary(buffer: Buffer): boolean
+
+data_structures:
+  FileMeta:
+    fields:
+      - path: string
+      - relativePath: string
+      - size: number
+      - extension: string
+      - type: string      # js/php/yaml/json/txt/md/html/twig/unknown
+      - isBinary: boolean
+      - lineCount: number
+      - hash: string
+      - skipped: boolean
+
+  FileTypeInfo:
+    fields:
+      - isBinary: boolean
+      - extension: string
+      - type: string
+
+behavior_rules_v1:
+  - max file size = 1 MB
+  - skip backups, logs, environment files
+  - MUST NOT read entire contents of large binary files
+  - calculate hash on raw buffer only for text files
+  - treat unknown extensions as text unless binary
+
+ignore_patterns:
+  directories:
+    - "node_modules"
+    - "vendor"
+    - ".git"
+    - ".ai"
+    - ".mcp_backups"
+    - ".DS_Store"
+  files:
+    - "*.png"
+    - "*.jpg"
+    - "*.jpeg"
+    - "*.gif"
+    - "*.pdf"
+    - "*.zip"
+    - "*.bin"
+    - "*.exe"
+    - "*.dll"
+
+integration_with_steps:
+  - scan_project step:
+      - calls scanProject
+      - stores result in context.state.scan.files
+      - logs file count and skipped files
+
+performance_notes:
+  - scanning is synchronous I/O heavy → batch operations recommended
+  - do not use recursion too deeply (stack risk)
+  - use BFS or iterative directory traversal
+  - hashing can be optionally disabled for speed (v1 default: enabled)
+
+security_notes:
+  - do not execute any code
+  - do not load dynamic modules
+  - treat all files as untrusted
+  - no external network calls
+
+notes_v2:
+  - extract symbols (classes, functions, imports)
+  - detect code smells or hotspots
+  - language-aware parsing
+  - dependency graph builder
+
+test_plan:
+  - scan simple project → correct metadata
+  - binary detection works
+  - skip ignored directories
+  - skip large files
+  - correct line count
+  - correct file classification
+  - saved to context.state.scan

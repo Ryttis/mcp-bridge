@@ -1,0 +1,198 @@
+version: 1
+module: agent_roadmap
+description: >
+  Master roadmap for Universal Agent development. Defines implementation sequence,
+  dependencies, milestones, v1-completion criteria, and v2 expansion plan.
+
+location: blueprint/roadmap/
+
+goals_v1:
+  - safe, deterministic, doc-only file improvement pipeline
+  - agent able to process entire project or specific files
+  - pass/fail validation system guarantees no logic changes
+  - centralized logs, backups, and run summary
+  - recipes as declarative orchestration
+  - CLI integration via bridge.js
+  - hybrid IO (MCP + FS fallback)
+  - clear modular architecture (DDD-style)
+  - predictable results regardless of file structure
+
+key_constraints:
+  - NO logic transformations in v1
+  - NO cross-file reasoning
+  - AI used ONLY for doc-header generation
+  - strict validation rules
+  - safe backups always before writing
+
+implementation_order:
+  # PHASE 1 — FOUNDATION
+  - step: Create directory structure under src/agent/**
+    depends_on: []
+    duration: short
+
+  - step: Implement Context subsystem
+    depends_on: []
+    duration: short
+
+  - step: Implement Logging Layer (context-based)
+    depends_on:
+      - Context subsystem
+    duration: short
+
+  # PHASE 2 — ENGINE CORE
+  - step: Implement Executor (runRecipe)
+    depends_on:
+      - Context
+      - Logging
+    duration: medium
+
+  - step: Implement Pipeline (step execution engine)
+    depends_on:
+      - Executor
+      - Logging
+    duration: medium
+
+  # PHASE 3 — PRIMITIVE STEPS
+  - step: Implement scan_project
+    depends_on:
+      - Context
+      - Logging
+    duration: medium
+
+  - step: Implement select_files
+    depends_on:
+      - scan_project
+    duration: short
+
+  - step: Implement read (hybrid IO)
+    depends_on:
+      - Pipeline
+    duration: short
+
+  - step: Implement backup manager
+    depends_on:
+      - read
+    duration: medium
+
+  - step: Implement write (hybrid IO)
+    depends_on:
+      - backup manager
+      - validation layer
+    duration: medium
+
+  - step: Implement log step
+    depends_on:
+      - Logging subsystem
+    duration: short
+
+  # PHASE 4 — AI SUBSYSTEM
+  - step: Implement OpenAI client wrapper
+    depends_on:
+      - Context
+      - Logging
+    duration: short
+
+  - step: Implement doc-header generator (strict mode)
+    depends_on:
+      - AI client wrapper
+      - read
+    duration: medium
+
+  - step: Integrate ai_doc_header step
+    depends_on:
+      - doc-header generator
+      - Pipeline
+    duration: short
+
+  # PHASE 5 — VALIDATION LAYER
+  - step: Implement header detection
+    depends_on:
+      - read
+    duration: medium
+
+  - step: Implement checksum diffing
+    depends_on:
+      - header detection
+    duration: short
+
+  - step: Implement doc-only validator
+    depends_on:
+      - checksum diffing
+    duration: medium
+
+  # PHASE 6 — RECIPE SYSTEM
+  - step: Implement recipe parser
+    depends_on:
+      - Pipeline
+      - Steps
+    duration: medium
+
+  - step: Add builtin recipes (docOnly, analyzeOnly)
+    depends_on:
+      - recipe parser
+    duration: short
+
+  # PHASE 7 — BRIDGE INTEGRATION
+  - step: Extend bridge.js to trigger recipes
+    depends_on:
+      - Executor
+      - Recipe parser
+    duration: medium
+
+  - step: Add CLI output formatting
+    depends_on:
+      - Logging
+    duration: short
+
+  - step: Add verbose mode + interactive compatibility
+    depends_on:
+      - bridge integration
+    duration: short
+
+v1_acceptance_criteria:
+  - docOnly recipe runs on any project
+  - doc headers generated safely
+  - validation rejects illegal changes
+  - backups created correctly
+  - files written only when valid
+  - persistent logs generated in .ai/logs
+  - CLI:
+      - improve <file>
+      - analyze <file>
+      - run-recipe <name>
+  - zero crashes during pipeline
+  - deterministic output (same input → same output)
+
+v2_overview:
+  - semantic AI transformations (safe refactor mode)
+  - AST-based validation
+  - dependency graph analysis
+  - conditional recipe steps
+  - multi-file reasoning
+  - automatic diff previews
+  - interactive pipeline editor
+  - multi-agent collaboration (analysis agent + fix agent)
+
+risks:
+  - OpenAI output variability
+  - MCP latency or noisy output
+  - validation strictness might require tuning
+  - large file performance
+
+risk_mitigation:
+  - enforce deterministic system prompt
+  - use temperature=0.1
+  - add checksum-based validation
+  - use FS fallback when MCP noisy
+
+timeline_estimate:
+  phase_1: 1–2 days
+  phase_2: 1–2 days
+  phase_3: 2–4 days
+  phase_4: 2–3 days
+  phase_5: 2–4 days
+  phase_6: 1–2 days
+  phase_7: 2–4 days
+
+total_estimate_days: 12–19 days of focused implementation
+

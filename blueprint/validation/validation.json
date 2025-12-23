@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "module": "agent_validation_layer",
+  "description": "Validation subsystem ensures AI output is doc-only and safe.",
+  "location": "src/agent/validation/",
+  "responsibilities": [
+    "compare original vs AI output",
+    "detect header block",
+    "ensure exactly one header",
+    "forbid ANY non-header differences",
+    "record result in context.validationResults"
+  ],
+  "public_api": {
+    "validateDocOnly": {
+      "signature": "function validateDocOnly(original, aiOutput, options): ValidationResult"
+    },
+    "detectHeaderBlock": {
+      "signature": "function detectHeaderBlock(content, commentStyle): HeaderRegion"
+    },
+    "normalizeWhitespace": {
+      "signature": "function normalizeWhitespace(text): string"
+    }
+  },
+  "data_structures": {
+    "ValidationOptions": {
+      "fields": [
+        "language",
+        "commentStyle",
+        "allowFormattingInsideHeader"
+      ]
+    },
+    "ValidationResult": {
+      "fields": [
+        "isValid",
+        "errors",
+        "headerRegion",
+        "originalHash",
+        "aiHash"
+      ]
+    },
+    "HeaderRegion": {
+      "fields": ["startLine", "endLine", "exists"]
+    }
+    ],
+    "validation_rules_v1": {
+      "header_rules": [
+        "exactly one header",
+        "header must be at top",
+        "correct commentStyle"
+      ],
+      "allowed_differences": [
+        "header block can differ",
+        "one blank line after header"
+      ],
+      "forbidden_differences": [
+        "ANY code changes",
+        "ANY reordering",
+        "ANY formatting changes outside header",
+        "identifier changes",
+        "markdown",
+        "extra comments outside header"
+      ]
+    },
+    "checksum_strategy": "SHA1 of content without header must match",
+    "integration_with_steps": {
+      "validate": "uses validateDocOnly for each file; stops pipeline on failure"
+    },
+    "error_conditions": [
+      "no header",
+      "multiple headers",
+      "header not at top",
+      "markdown detected",
+      "checksum mismatch",
+      "illegal code changes"
+    ],
+    "notes_v2": [
+      "safe refactor mode",
+      "semantic AST diffing",
+      "configurable strictness"
+    ],
+    "test_plan": [
+      "valid header passes",
+      "outside-header whitespace change fails",
+      "markdown fails",
+      "multiple headers fail",
+      "reordering fails",
+      "identifier rename fails"
+    ]
+  }

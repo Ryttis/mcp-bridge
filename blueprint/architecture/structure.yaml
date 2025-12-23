@@ -1,0 +1,250 @@
+version: 1
+name: mcp_universal_agent_architecture
+description: >
+  High-level directory and module structure for MCP Universal Agent v1.
+  Defines where the Agent core lives, how it relates to bridge/server/tools,
+  and which responsibilities each top-level module has.
+
+root:
+  project_name: mcp-server
+  base_path: "."
+  main_directories:
+    - path: src/server
+      id: server_runtime
+      purpose: >
+        MCP server runtime layer: loads tools, manages workspaces, handles RPC,
+        snapshots state, and exposes WebSocket interface.
+    - path: src/bridge
+      id: cli_bridge
+      purpose: >
+        CLI and interactive bridge between user (terminal / ChatGPT) and MCP server.
+        Handles commands, connects via WebSocket, and delegates to Agent when needed.
+    - path: src/agent
+      id: universal_agent
+      purpose: >
+        Universal Agent core. Implements scanning, pipelines, steps, recipes,
+        AI-powered transformations, validation, backup integration, and logging.
+    - path: tools
+      id: mcp_tools
+      purpose: >
+        MCP tools exposed via the server. Organized by domain (core, etno, factura).
+        Used by Agent indirectly via MCP and/or directly by the server.
+    - path: .ai
+      id: agent_state
+      purpose: >
+        Agent state and logs for v1. Contains context, run metadata, and internal
+        traces of operations. Human-readable but primarily machine-oriented.
+    - path: .mcp_backups
+      id: backup_store
+      purpose: >
+        Centralized, timestamped backup store for all files modified by the Agent.
+        Mirrors project structure inside timestamped session folders.
+    - path: blueprint
+      id: blueprint_docs
+      purpose: >
+        Architecture and implementation blueprints split into modular YAML/JSON
+        documents (architecture, engine, steps, recipes, scanner, backup, etc.).
+    - path: headers
+      id: manual_headers
+      purpose: >
+        Manually written human-facing headers/notes (status, progress, concepts).
+        v1 Agent does NOT write here; it uses .ai/ instead.
+
+modules:
+  - id: server_runtime
+    path: src/server
+    type: runtime
+    files:
+      - name: loader.js
+        role: load_tools
+        description: >
+          Dynamically loads MCP tools from /tools/* and registers them into global.mcpState.
+      - name: rpc.js
+        role: rpc_handler
+        description: >
+          Handles JSON-RPC requests over WebSocket connections. Routes calls to tools.
+      - name: snapshot.js
+        role: snapshot_manager
+        description: >
+          Periodically snapshots global state for recovery/analysis.
+      - name: workspace.js
+        role: workspace_manager
+        description: >
+          Initializes and manages workspaces (paths, projects) accessible via MCP.
+      - name: logger.js
+        role: server_logger
+        description: >
+          Logging for server runtime activity (connections, RPC, snapshots, errors).
+    responsibilities:
+      - expose WebSocket MCP API
+      - load and register tools
+      - manage global MCP state
+      - handle RPC calls safely
+      - emit snapshots and logs
+    depends_on:
+      - mcp_tools
+    notes: >
+      v1 Universal Agent does not modify server_runtime logic, only documentation.
+      Refactors of runtime will come only after Agent stabilization.
+
+  - id: cli_bridge
+    path: src/bridge
+    type: interface
+    files:
+      - name: agent.js
+        role: agent_entrypoint
+        description: >
+          Bridge entrypoint that calls into src/agent to perform operations
+          (improve, analyze, etc.).
+      - name: analyzer.js
+        role: ad_hoc_analysis
+        description: >
+          Ad-hoc analysis tooling and compatibility helpers from previous versions.
+      - name: interactive.js
+        role: interactive_console
+        description: >
+          JSON-RPC interactive console over WebSocket to MCP server.
+      - name: utils.js
+        role: bridge_utilities
+        description: >
+          Shared helpers used by bridge components (argument parsing, formatting).
+    responsibilities:
+      - connect to MCP server over WebSocket
+      - expose CLI commands (analyze, improve, interactive console)
+      - delegate improvement/analysis work to src/agent
+    depends_on:
+      - server_runtime
+      - universal_agent
+    notes: >
+      v1 goal: make bridge primarily a CLI front-end delegating core logic to src/agent.
+      Old agent logic in src/bridge/agent/* will be migrated into src/agent/*.
+
+  - id: universal_agent
+    path: src/agent
+    type: core
+    submodules:
+      - id: engine
+        path: src/agent/engine
+        purpose: >
+          Core pipeline executor and operation context. Runs steps sequentially
+          according to recipes and maintains per-run context.
+      - id: steps
+        path: src/agent/steps
+        purpose: >
+          Small primitive steps (scan_project, select_files, read, ai_doc_header,
+          validate, backup, write, log).
+      - id: recipes
+        path: src/agent/recipes
+        purpose: >
+          YAML/JSON-defined pipelines describing which steps to run (in order),
+          with parameters. v1: no branching, purely sequential.
+      - id: ai
+        path: src/agent/ai
+        purpose: >
+          OpenAI client integration and prompt templates for ultra-strict doc-only mode.
+      - id: scanner
+        path: src/agent/scanner
+        purpose: >
+          Text-only project scanner producing metadata for all relevant files.
+      - id: backup
+        path: src/agent/backup
+        purpose: >
+          Centralized backup manager writing to .mcp_backups/{timestamp}/...
+      - id: validation
+        path: src/agent/validation
+        purpose: >
+          Minimal validation to ensure AI output is safe (doc-only, no logic changes).
+      - id: logging
+        path: src/agent/logging
+        purpose: >
+          Agent-side logging, writing into .ai/ and optional console output.
+      - id: utils
+        path: src/agent/utils
+        purpose: >
+          Shared utilities (path handling, file-type detection, diff helpers).
+    responsibilities:
+      - own all “intelligence” of the system (scan, plan-lite, transform, validate, persist)
+      - expose a simple API to bridge: e.g. runRecipe("docOnly", options)
+      - manage sessions/runs and coordinate backup + logging
+    depends_on:
+      - server_runtime     # via MCP calls when needed
+      - agent_state        # read/write .ai/ context
+      - backup_store       # write backups
+    notes: >
+      This is the primary growth area of the system. v1 focuses on Universal Text Mode
+      and doc-only improvements. v2+ can extend steps, recipes, and AI behaviors.
+
+  - id: mcp_tools
+    path: tools
+    type: tools
+    subdirectories:
+      - path: tools/core
+        purpose: general-purpose core tools (files, commands, cache, logs)
+      - path: tools/etno
+        purpose: Etno Lentos-specific tooling (material parsing, summarization)
+      - path: tools/factura
+        purpose: FacturaCore-specific tooling (read-only file access for now)
+    responsibilities:
+      - provide MCP-callable operations to the server and Agent
+      - handle low-level file access, commands, and domain-specific parsing
+    depends_on: []
+    notes: >
+      v1 Agent uses tools primarily via MCP for hybrid IO. Internal refactors of tools
+      are out of scope for v1, except documentation and small hygiene.
+
+  - id: agent_state
+    path: .ai
+    type: state
+    responsibilities:
+      - store per-run context logs
+      - keep minimal metadata about operations
+      - act as v1 “memory” store for the Universal Agent
+    depends_on: []
+    notes: >
+      v1 logs only. No automated decision-making based on .ai contents yet.
+      Future: index .ai for long-term agent memory.
+
+  - id: backup_store
+    path: .mcp_backups
+    type: backup
+    responsibilities:
+      - keep timestamped snapshots of all files modified by the Agent
+      - mirror project directory structure under each timestamp
+    depends_on: []
+    notes: >
+      v1: only writes. v2: restore commands and diff tooling.
+
+  - id: blueprint_docs
+    path: blueprint
+    type: documentation
+    responsibilities:
+      - store YAML/JSON blueprints for architecture, engine, steps, recipes, etc.
+      - act as source-of-truth for design and implementation decisions
+    depends_on: []
+    notes: >
+      These files are not executed at runtime. They guide implementation and future
+      refactors and can be consumed by tooling later.
+
+  - id: manual_headers
+    path: headers
+    type: documentation
+    responsibilities:
+      - hold manual high-level notes, status, and concept logs written by you
+    depends_on: []
+    notes: >
+      v1 Agent does not modify headers/ automatically. Changes here remain manual.
+
+test_plan:
+  goal: >
+    Ensure the high-level structure is stable and consistent before deeper
+    implementation. This layer is “sealed” once basic checks pass.
+  checks:
+    - name: directory_exists
+      description: Verify all declared top-level directories exist or are created on init.
+    - name: module_paths_unique
+      description: Ensure each module id/path pair is unique and not conflicting.
+    - name: imports_consistency
+      description: Spot-check that src/bridge uses src/agent as planned (no old paths).
+    - name: backup_and_state_separation
+      description: Confirm that .mcp_backups and .ai are separate and used for different purposes.
+  status: pending

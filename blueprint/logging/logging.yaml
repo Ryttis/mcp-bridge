@@ -1,0 +1,108 @@
+version: 1
+module: agent_logging_layer
+description: >
+  Logging subsystem for Universal Agent v1. Supports structured run logs, step logs,
+  context logs, and persistent output into .ai/logs/{timestamp}.log. Provides helpers
+  for consistent formatting and verbosity control across all modules.
+
+location:
+  logger: src/agent/logging/logger.js
+  formatter: src/agent/logging/formatter.js
+
+responsibilities:
+  - maintain an in-memory log buffer via context.logs
+  - provide simple and consistent logging API for steps and engine
+  - write final logs to persistent .ai/logs/ directory
+  - support verbosity levels for console output vs internal logs
+  - add timestamps to every log entry
+  - attach stepId metadata when inside pipeline step execution
+  - automatically include sessionId + recipeName in first log lines
+
+public_api:
+  logInfo:
+    signature: >
+      function logInfo(context: RunContext, message: string, meta?: object): void
+    description: Add info-level log to context and optionally to console.
+
+  logError:
+    signature: >
+      function logError(context: RunContext, message: string, meta?: object): void
+    description: Add error-level log with standardized formatting.
+
+  logStep:
+    signature: >
+      function logStep(context: RunContext, stepId: string, message: string): void
+    description: Append step-scoped log entry.
+
+  finalizeLogs:
+    signature: >
+      async function finalizeLogs(context: RunContext): Promise<string>
+    description: >
+      Writes entire log buffer to persistent file:
+      .ai/logs/{context.timestamp}.log
+    returns: path to written log file
+
+log_entry_structure:
+  - timestamp: ISO8601
+  - level: info | error | step
+  - message: string
+  - meta: optional object
+  - stepId: null | string
+  - sessionId: string (auto)
+  - recipeName: string (auto)
+
+log_format_examples:
+  info:  "[2025-11-13T12:55:02.321Z] [INFO]  Loaded 48 files (session RXYZ)."
+  step:  "[2025-11-13T12:55:03.991Z] [STEP read] Read 12 files."
+  error: "[2025-11-13T12:55:04.100Z] [ERROR] Validation failed in file: server.js"
+
+storage:
+  directory: ".ai/logs"
+  filename: "{timestamp}.log"
+  rotate: false  # v1
+  overwrite: false
+  ensureDir: true
+
+verbosity_levels:
+  - silent: console prints nothing, logs only stored in context and filesystem
+  - normal: important info + errors logged to console
+  - verbose: every step log and action printed to console
+
+rules_v1:
+  - logs must NEVER leak AI prompts or API keys
+  - logs must record number of files processed, successes, failures
+  - logs must contain validation summary
+  - logs must contain backup summary
+  - logs must include pipeline duration
+  - finalizeLogs MUST be called by executor
+
+integration_with_engine:
+  - executor:
+      - logs run start, options, recipe name
+      - logs run end, duration, result
+      - calls finalizeLogs(context)
+  - pipeline:
+      - logs each step start/end
+      - logs step-level errors
+  - steps:
+      - use logStep for structured output
+
+error_conditions:
+  - failure to write log file (should fallback to console and warn)
+  - invalid context
+  - missing timestamp (context corrupted)
+
+notes_v2:
+  - JSON log format option
+  - multi-run log index
+  - searchable log viewer
+  - warnings level
+  - plugin-based reporting (Slack, Telegram, Dashboard)
+
+test_plan:
+  - logInfo / logError append correct entries
+  - logStep uses stepId correctly
+  - finalizeLogs writes file
+  - logs include timestamps and metadata
+  - no AI prompt leakage
+  - silent/normal/verbose modes work correctly

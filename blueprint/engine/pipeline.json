@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "module": "agent_engine_pipeline",
+  "description": "Pipeline subsystem for Universal Agent v1. Responsible for resolving step modules, invoking them sequentially, passing context/params, and aggregating results.",
+  "location": "src/agent/engine/pipeline.js",
+  "responsibilities": [
+    "receive RecipeDefinition from executor",
+    "resolve each step module",
+    "execute steps in order",
+    "call step.run(context, params)",
+    "record per-step execution metadata",
+    "stop on critical errors",
+    "return pipeline result"
+  ],
+  "public_api": {
+    "runPipeline": {
+      "description": "Execute ordered steps from a recipe.",
+      "signature": "async function runPipeline(recipe: RecipeDefinition, context: RunContext): Promise<PipelineResult>",
+      "parameters": {
+        "recipe": "RecipeDefinition",
+        "context": "RunContext"
+      },
+      "returns": {
+        "type": "PipelineResult",
+        "description": "Metadata about each executed step and final success flag."
+      }
+    }
+  },
+  "data_structures": {
+    "StepExecution": {
+      "fields": [
+        "id",
+        "using",
+        "start",
+        "end",
+        "duration_ms",
+        "success",
+        "error",
+        "params",
+        "logs"
+      ]
+    },
+    "PipelineResult": {
+      "fields": [
+        "steps",
+        "success",
+        "errors"
+      ]
+    }
+  },
+  "step_resolution": {
+    "search_order": [
+      "src/agent/steps/{using}.js",
+      "src/agent/steps/primitives/{using}.js",
+      "src/agent/steps/ai/{using}.js",
+      "src/agent/steps/scanner/{using}.js"
+    ],
+    "error_if_missing": true,
+    "v2_notes": "allow fallback groups and aliases"
+  },
+  "step_execution": {
+    "process": [
+      "record start timestamp",
+      "dynamic import of step file",
+      "verify exported run() exists",
+      "execute run(context, params)",
+      "record end timestamp",
+      "update context logs"
+    ],
+    "continue_on_failure": false
+  },
+  "logging": {
+    "details": [
+      "each step execution recorded",
+      "pipeline summary appended",
+      "written to .ai/logs/{timestamp}.log by executor"
+    ]
+  },
+  "error_handling": {
+    "step_missing": {
+      "type": "critical",
+      "message": "Step module not found"
+    },
+    "step_runtime_error": {
+      "type": "critical",
+      "message": "Step execution failed"
+    },
+    "param_errors": {
+      "type": "non_critical",
+      "message": "Invalid or missing params"
+    }
+  },
+  "extensibility_v2": [
+    "configurable continue_on_failure",
+    "branching logic",
+    "assign step outputs to context.state",
+    "macro steps"
+  ],
+  "test_plan": [
+    "pipeline with 1 step runs",
+    "pipeline with 3 steps mutates context",
+    "missing step fails",
+    "StepExecution logs created",
+    "pipeline stops on error",
+    "docOnly recipe runs through all steps"
+  ]
+}

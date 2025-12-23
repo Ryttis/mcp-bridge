@@ -1,0 +1,16 @@
+name: collect-files
+description: Collect selected project files
+
+steps:
+  - type: selectFiles
+    patterns:
+      - "**/*.js"
+      - "**/*.json"
+      - "**/*.yaml"
+      - "**/*.yml"
+    ignore:
+      - "node_modules/**"
+      - "**/node_modules/**"
+
+  - type: readFiles
+    files: "{{selectedFiles}}"

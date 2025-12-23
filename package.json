@@ -1,0 +1,26 @@
+{
+  "type": "module",
+  "name": "mcp-bridge",
+  "version": "1.0.0",
+  "description": "MCP bridge and agent orchestration layer",
+  "main": "bridge.js",
+  "scripts": {
+    "dev": "node bridge.js",
+    "start": "node bridge.js",
+    "gen:descriptions": "node src/bridge/scripts/generateDescriptions.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ryttis/logpilot": "^1.0.0",
+    "csv-parse": "^6.1.0",
+    "dotenv": "^17.2.3",
+    "fast-glob": "^3.3.3",
+    "js-yaml": "^4.1.1",
+    "openai": "^6.8.1",
+    "uuid": "^13.0.0",
+    "yaml": "^2.8.1",
+    "ws": "^8.18.3"
+  }
+}

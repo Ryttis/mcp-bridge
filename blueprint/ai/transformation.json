@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "module": "agent_ai_transformation",
+  "description": "AI subsystem for Universal Agent v1, providing ultra-strict doc-only header generation.",
+  "location": {
+    "client": "src/agent/ai/client.js",
+    "doc_header": "src/agent/ai/docHeader.js"
+  },
+  "responsibilities": [
+    "create OpenAI client",
+    "provide doc-only header generation",
+    "enforce strict prompt constraints",
+    "ensure no logic changes",
+    "integrate with ai_doc_header step"
+  ],
+  "config": {
+    "env": [
+      {
+        "name": "OPENAI_API_KEY",
+        "required": true
+      },
+      {
+        "name": "OPENAI_MODEL_DOC_ONLY",
+        "required": false,
+        "default": "gpt-4o-mini"
+      }
+    ],
+    "defaults": {
+      "model": "gpt-4o-mini",
+      "temperature": 0.1,
+      "max_tokens": 2048
+    }
+  },
+  "public_api": {
+    "createClient": {
+      "description": "Initialize OpenAI client.",
+      "signature": "function createClient(): OpenAIClient"
+    },
+    "generateDocHeader": {
+      "description": "Generate doc-only header for a single file.",
+      "signature": "async function generateDocHeader(input: DocHeaderInput): Promise<string>",
+      "input": "DocHeaderInput",
+      "output": "string (final file content with header)"
+    }
+  },
+  "data_structures": {
+    "DocHeaderInput": {
+      "fields": [
+        "filePath",
+        "language",
+        "commentStyle",
+        "rawContent",
+        "mode",
+        "extraInstruction"
+      ]
+    }
+  },
+  "prompt_design": {
+    "system_prompt": "You are a very strict documentation assistant for a codebase. Your ONLY job is to add or normalize a single documentation header at the very top of the file, describing what the file does, key responsibilities, and important parameters or side effects. HARD RULES: Do NOT change ANY logic. Do NOT rename variables, functions, or classes. Do NOT reorder code. Do NOT change formatting except for the header block. Output MUST be ONLY the final file content (no markdown, no commentary). Insert EXACTLY ONE header block using the provided comment style. If a header already exists, normalize/replace it, but leave everything else untouched.",
+    "user_template": "File path: {filePath}\nLanguage: {language}\nComment style: {commentStyle}\nMode: {mode}\n\nOriginal file content:\n---\n{rawContent}\n---\n\nExtra instruction (optional):\n{extraInstruction}\n\nNow output ONLY the final file content with the correct single header at the top."
+  },
+  "constraints_v1": [
+    "no multi-file context",
+    "no cross-file reasoning",
+    "no refactor suggestions in header",
+    "header 3–8 lines",
+    "no markdown in output"
+  ],
+  "error_handling": [
+    "empty output -> AIEmptyOutputError",
+    "markdown fences -> AIMarkdownDetectedError",
+    "no header -> AIHeaderMissingError",
+    "multiple headers -> AIMultipleHeadersError"
+  ],
+  "integration_with_steps": {
+    "ai_doc_header": "uses generateDocHeader per file; writes to context.aiOutputs[filePath]; logs successes and failures"
+  },
+  "notes_v2": [
+    "multi-mode AI",
+    "model per recipe",
+    "retry/backoff",
+    "token usage metrics"
+  ],
+  "test_plan": [
+    "JS file without header → header added",
+    "PHP file with header → header replaced, logic unchanged",
+    "markdown in output → error",
+    "multiple headers → error",
+    "empty → error"
+  ]
+}
