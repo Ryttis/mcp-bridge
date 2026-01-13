@@ -1,933 +1,146 @@
 {
-  "project": "mcp-bridge",
-  "generatedAt": "2025-12-22T22:06:46.340Z",
-  "mode": "scan-project",
-  "root": "/Users/Ryttis/mcp-bridge",
-  "count": 84,
-  "files": [
-    {
-      "path": "/Users/Ryttis/mcp-bridge/.env",
-      "relativePath": ".env",
-      "size": 402,
-      "extension": null,
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 14,
-      "hash": "89624a0eeaa1db9465ca2ae7aa3a98d3da496e63",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/.gitignore",
-      "relativePath": ".gitignore",
-      "size": 1839,
-      "extension": null,
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 100,
-      "hash": "3f1815e2e340e198abba6143189e4a90ac15ad96",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/bridge.js",
-      "relativePath": "bridge.js",
-      "size": 2725,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 88,
-      "hash": "1a365d7e4896145291f3d696b719231015e8e3a1",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/package-lock.json",
-      "relativePath": "package-lock.json",
-      "size": 16726,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 488,
-      "hash": "a1ab598bcdcbbbf6f49721d856746394cee21aa4",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/package.json",
-      "relativePath": "package.json",
-      "size": 613,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 27,
-      "hash": "02f886aff7b9a6455970ce389453e88bb107aee8",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/test-logpilot.js",
-      "relativePath": "test-logpilot.js",
-      "size": 121,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 5,
-      "hash": "5ffcd63de268fdcc44a2b5b67b76dfd6a5d47ab4",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/.idea/.gitignore",
-      "relativePath": ".idea/.gitignore",
-      "size": 176,
-      "extension": null,
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 9,
-      "hash": "f407904694bc6b866c2c0c732828ef8478450583",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/.idea/easycode.ignore",
-      "relativePath": ".idea/easycode.ignore",
-      "size": 111,
-      "extension": "ignore",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 14,
-      "hash": "e8430b3e1d7e3557b3b1991018d00e5f10e94a2a",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/.idea/jsLibraryMappings.xml",
-      "relativePath": ".idea/jsLibraryMappings.xml",
-      "size": 187,
-      "extension": "xml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 6,
-      "hash": "58c9a926f05d78af07aa02d6694955bd6bd3511d",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/.idea/mcp-server.iml",
-      "relativePath": ".idea/mcp-server.iml",
-      "size": 281,
-      "extension": "iml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 8,
-      "hash": "5859c9883f46f9f77ccdd22e90f71b82ef890b22",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/.idea/modules.xml",
-      "relativePath": ".idea/modules.xml",
-      "size": 272,
-      "extension": "xml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 8,
-      "hash": "d6af4025b6701c0f849e35c0c8401697f6c39fd3",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/.idea/php.xml",
-      "relativePath": ".idea/php.xml",
-      "size": 692,
-      "extension": "xml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 19,
-      "hash": "2da48f684ecb1cc69628524faa444d8c86a98575",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/.idea/vcs.xml",
-      "relativePath": ".idea/vcs.xml",
-      "size": 180,
-      "extension": "xml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 6,
-      "hash": "c92f3eb0ad1c70371e177a4d7d741f90af3f902c",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/.idea/workspace.xml",
-      "relativePath": ".idea/workspace.xml",
-      "size": 10327,
-      "extension": "xml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 147,
-      "hash": "5879557a2063843434d01d2f5c7fc82c99d70c9c",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/ai/transformation.json",
-      "relativePath": "blueprint/ai/transformation.json",
-      "size": 3359,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 92,
-      "hash": "48f20242f0e77a11f9fd107b3c7c913ff25cf6c6",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/ai/transformation.yaml",
-      "relativePath": "blueprint/ai/transformation.yaml",
-      "size": 4596,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 131,
-      "hash": "d6aebf26b860ee6a98134c88ecd9269473b95dd5",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/architecture/structure.json",
-      "relativePath": "blueprint/architecture/structure.json",
-      "size": 10821,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 279,
-      "hash": "72157aa1b9888f3bcbaf3f28b5e5c62285ff70d3",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/architecture/structure.yaml",
-      "relativePath": "blueprint/architecture/structure.yaml",
-      "size": 9512,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 251,
-      "hash": "60c8f694fc9933c028b5d87d9f74fb590eca83a2",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/backup/backup.json",
-      "relativePath": "blueprint/backup/backup.json",
-      "size": 2038,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 82,
-      "hash": "42d35d9256c32cf0abc3abfa483478605913b496",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/backup/backup.yaml",
-      "relativePath": "blueprint/backup/backup.yaml",
-      "size": 3516,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 108,
-      "hash": "ebb127d0e32f3281a612e97c4617f13c6c321daa",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/engine/context.json",
-      "relativePath": "blueprint/engine/context.json",
-      "size": 3211,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 118,
-      "hash": "becf4f94b4bdbe9981dcc0d030e33c2e7f3b6817",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/engine/context.yaml",
-      "relativePath": "blueprint/engine/context.yaml",
-      "size": 4489,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 161,
-      "hash": "df8525935d17edd745a5b2424d1231e5852e381c",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/engine/executor.json",
-      "relativePath": "blueprint/engine/executor.json",
-      "size": 3428,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 117,
-      "hash": "cc2eb5a2aa8e18a45a2c2d7b974aa1bba7782b88",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/engine/executor.yaml",
-      "relativePath": "blueprint/engine/executor.yaml",
-      "size": 4139,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 140,
-      "hash": "72f4d6496dffea2c980fbc1a6f9c59af19a0faa3",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/engine/pipeline.json",
-      "relativePath": "blueprint/engine/pipeline.json",
-      "size": 2864,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 108,
-      "hash": "e5cee47da7678e7ad2a1b6d79f6252e2aebbe034",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/engine/pipeline.yaml",
-      "relativePath": "blueprint/engine/pipeline.yaml",
-      "size": 3317,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 108,
-      "hash": "efdb7836e78d66b40a1fbfa3129da001841c1061",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/integration/bridge.json",
-      "relativePath": "blueprint/integration/bridge.json",
-      "size": 1767,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 80,
-      "hash": "d444bc72188806a394e9b31926f2d23192921c73",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/integration/bridge.yaml",
-      "relativePath": "blueprint/integration/bridge.yaml",
-      "size": 3511,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 120,
-      "hash": "4d8daa87638589113a89e33f3c73793944e529d2",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/logging/logging.json",
-      "relativePath": "blueprint/logging/logging.json",
-      "size": 1900,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 79,
-      "hash": "97ac5e84a081398e247d99d99c9ba3f34426264a",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/logging/logging.yaml",
-      "relativePath": "blueprint/logging/logging.yaml",
-      "size": 3520,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 109,
-      "hash": "b305829b9996039a9e4c47865d4fe93318710f91",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/recipes/schema.yaml",
-      "relativePath": "blueprint/recipes/schema.yaml",
-      "size": 3505,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 119,
-      "hash": "0819ff429de2280cadffcfe227bdb699a3b41814",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/recipes/sechema.json",
-      "relativePath": "blueprint/recipes/sechema.json",
-      "size": 2247,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 96,
-      "hash": "5413c5fb9c766f9a093e50242d5d631639ea3060",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/roadmap/roadmap.json",
-      "relativePath": "blueprint/roadmap/roadmap.json",
-      "size": 1816,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 86,
-      "hash": "de59e4f67807745d40ddac6d816a8013deee3fe8",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/roadmap/roadmap.yaml",
-      "relativePath": "blueprint/roadmap/roadmap.yaml",
-      "size": 4650,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 199,
-      "hash": "e616356751957ca553567e0d4fae7089217d039d",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/scanner/scanner.json",
-      "relativePath": "blueprint/scanner/scanner.json",
-      "size": 2293,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 89,
-      "hash": "ed7c293b4df9939e197b03684771b845471bce36",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/scanner/scanner.yaml",
-      "relativePath": "blueprint/scanner/scanner.yaml",
-      "size": 3211,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 125,
-      "hash": "e689e0f619bd816671c19037691c5dbbcd0283de",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/steps/primitives.json",
-      "relativePath": "blueprint/steps/primitives.json",
-      "size": 3575,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 112,
-      "hash": "d3b45aeb5b2571daadf784e2121d39fa8a09d95d",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/steps/primitives.yaml",
-      "relativePath": "blueprint/steps/primitives.yaml",
-      "size": 5182,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 173,
-      "hash": "24c4cb80934b5ed2ba42c7b62409e7736a916b7b",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/validation/validation.json",
-      "relativePath": "blueprint/validation/validation.json",
-      "size": 2393,
-      "extension": "json",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 90,
-      "hash": "4606fba9d74755ee4a6cd54b0d3ffbfe9de545b9",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/blueprint/validation/validation.yaml",
-      "relativePath": "blueprint/validation/validation.yaml",
-      "size": 3505,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 117,
-      "hash": "0ded1dc35d60ecf96e525c84c60b68ab6c475454",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/agent.js",
-      "relativePath": "src/bridge/agent.js",
-      "size": 48,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 2,
-      "hash": "9907b052c68f2515ec72b11b1b95a6eb153beaac",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/analyzer.js",
-      "relativePath": "src/bridge/analyzer.js",
-      "size": 1764,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 53,
-      "hash": "ac00655a1d01eb4fa73123c85d3df2c918115ede",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/descriptions.js",
-      "relativePath": "src/bridge/descriptions.js",
-      "size": 1164,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 27,
-      "hash": "846b1694df2ac60f7e3c22940ac3132cb1fd0fd6",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/interactive.js",
-      "relativePath": "src/bridge/interactive.js",
-      "size": 1342,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 45,
-      "hash": "686e6197163fcea6437f6ae2171156e37209df9b",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/utils.js",
-      "relativePath": "src/bridge/utils.js",
-      "size": 1085,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 39,
-      "hash": "8d49ca45b51bd8eb1f6716431f924cef2d2131e5",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/backup/manager.js",
-      "relativePath": "src/agent/backup/manager.js",
-      "size": 2471,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 101,
-      "hash": "a27db0ca37df787085f2e16693370411ff246bf7",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/engine/context.js",
-      "relativePath": "src/agent/engine/context.js",
-      "size": 3175,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 126,
-      "hash": "8619a28dc44c7b49fd7aa7877d61bbcb6b514236",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/engine/executor.js",
-      "relativePath": "src/agent/engine/executor.js",
-      "size": 1104,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 43,
-      "hash": "1b7ff297d0d63410a027189a5484605f5026b2eb",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/engine/pipeline.js",
-      "relativePath": "src/agent/engine/pipeline.js",
-      "size": 1236,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 52,
-      "hash": "c3534ee64a0ed62546bd0389b4da6a65e6d31d1c",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/integration/io.js",
-      "relativePath": "src/agent/integration/io.js",
-      "size": 1012,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 41,
-      "hash": "f0a365ccc1c27c2c321fe51f2f3389538c559c36",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/integration/mcp.js",
-      "relativePath": "src/agent/integration/mcp.js",
-      "size": 1980,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 85,
-      "hash": "5680ebf07f02e4d7515d060084bc8b92e0b2b4b8",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/logging/formatter.js",
-      "relativePath": "src/agent/logging/formatter.js",
-      "size": 899,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 43,
-      "hash": "996f26aa6a047716c08704c1ce956cd441393cd7",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/logging/logger.js",
-      "relativePath": "src/agent/logging/logger.js",
-      "size": 1844,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 75,
-      "hash": "19763155f86263b8b2ba8bdb24b910370b194762",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/recipes/loader.js",
-      "relativePath": "src/agent/recipes/loader.js",
-      "size": 1335,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 49,
-      "hash": "984caa523994be8e9c75964abec5f9f3f6e57d8b",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/recipes/validator.js",
-      "relativePath": "src/agent/recipes/validator.js",
-      "size": 1163,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 44,
-      "hash": "c0edcb91c838d7910e311a4343d090a44529bf98",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/scanner/fileType.js",
-      "relativePath": "src/agent/scanner/fileType.js",
-      "size": 792,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 30,
-      "hash": "5c389cf29190d20a47b5279e1b75643ca4623f82",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/scanner/index.js",
-      "relativePath": "src/agent/scanner/index.js",
-      "size": 2690,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 94,
-      "hash": "9afe4bf5eb3a9315da8d13a95a5c6c1c46dce0f4",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/steps/loader.js",
-      "relativePath": "src/agent/steps/loader.js",
-      "size": 1351,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 59,
-      "hash": "ec4331905d24692106b51d1fa2bb52f9e54cd1e5",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/agent/aiImprove.js",
-      "relativePath": "src/bridge/agent/aiImprove.js",
-      "size": 810,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 23,
-      "hash": "cb1e27a216f0a67bfb278371891d0d3de9bb296b",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/agent/index.js",
-      "relativePath": "src/bridge/agent/index.js",
-      "size": 3537,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 92,
-      "hash": "0c3ce513dc37b96c73d17d96e5060e7b30da797b",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/agent/logger.js",
-      "relativePath": "src/bridge/agent/logger.js",
-      "size": 234,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 8,
-      "hash": "fd1e4e3e07ba27a570c21fc67fef93cceea758fd",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/agent/readFromMCP.js",
-      "relativePath": "src/bridge/agent/readFromMCP.js",
-      "size": 1336,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 40,
-      "hash": "045e6d83fac7163cb27b4514493d481056595607",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/agent/runRecipe.js",
-      "relativePath": "src/bridge/agent/runRecipe.js",
-      "size": 1934,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 60,
-      "hash": "ac433d148f4ec66f4ca552f259931e9d51ae4a65",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/agent/utils.js",
-      "relativePath": "src/bridge/agent/utils.js",
-      "size": 68,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 2,
-      "hash": "7693f9a177a8a0eeeb523dd37862d1d6be1dd1d4",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/agent/writeBackup.js",
-      "relativePath": "src/bridge/agent/writeBackup.js",
-      "size": 403,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 14,
-      "hash": "a1dda80b03e79b527306c2ebddf233d53b258473",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/agent/writeImproved.js",
-      "relativePath": "src/bridge/agent/writeImproved.js",
-      "size": 364,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 13,
-      "hash": "5e4cf3b0e47d25854d23feabce70fbc3f2e44086",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/scripts/extractSnapshot.js",
-      "relativePath": "src/bridge/scripts/extractSnapshot.js",
-      "size": 1271,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 46,
-      "hash": "1d244d0a045b78b9a6f5a40aeaac08c7797b0c80",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/scripts/generateDescriptions.js",
-      "relativePath": "src/bridge/scripts/generateDescriptions.js",
-      "size": 1786,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 56,
-      "hash": "a2889323becd1826dc974f2ae32fe662872973bb",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/bridge/scripts/splitSnapshot.js",
-      "relativePath": "src/bridge/scripts/splitSnapshot.js",
-      "size": 1233,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 41,
-      "hash": "17c171e12e4f9a49e943802d408296a4cddd7718",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/utils/fs/listDir.js",
-      "relativePath": "src/utils/fs/listDir.js",
-      "size": 783,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 24,
-      "hash": "b479f45c33f0c2b3dab7bf9b03b2b813ab1eab41",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/recipes/builtin/collect-files.yaml",
-      "relativePath": "src/agent/recipes/builtin/collect-files.yaml",
-      "size": 304,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 17,
-      "hash": "829ba90916fc03530cf6cc60d491cf01582260c8",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/recipes/builtin/doc-header.yaml",
-      "relativePath": "src/agent/recipes/builtin/doc-header.yaml",
-      "size": 173,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 10,
-      "hash": "d4e0a6495a6d580f582dd10eea17fe4010608cd7",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/recipes/builtin/scan-project.yaml",
-      "relativePath": "src/agent/recipes/builtin/scan-project.yaml",
-      "size": 119,
-      "extension": "yaml",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 7,
-      "hash": "84b1af4be2e0b401728fac2576d7144f8b94f779",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/steps/ai/docHeaderTransform.js",
-      "relativePath": "src/agent/steps/ai/docHeaderTransform.js",
-      "size": 2390,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 81,
-      "hash": "c94da49b21136277df0df727c553743af0083785",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/steps/ai/index.js",
-      "relativePath": "src/agent/steps/ai/index.js",
-      "size": 63,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 2,
-      "hash": "275f8d28c5aadc5c9ce4d1b7225e4782719252a4",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/steps/primitives/backupFiles.js",
-      "relativePath": "src/agent/steps/primitives/backupFiles.js",
-      "size": 677,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 28,
-      "hash": "b4f497488c857b323694d993b80f84e3d1a19f09",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/steps/primitives/backupInit.js",
-      "relativePath": "src/agent/steps/primitives/backupInit.js",
-      "size": 553,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 25,
-      "hash": "0bc08d08f3ba036625aa5c138774db2dab0ae549",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/steps/primitives/index.js",
-      "relativePath": "src/agent/steps/primitives/index.js",
-      "size": 353,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 11,
-      "hash": "7c1d31226d8df9451953b8e416326260a821a553",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/steps/primitives/readFiles.js",
-      "relativePath": "src/agent/steps/primitives/readFiles.js",
-      "size": 1189,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 46,
-      "hash": "7e0e342f90b04cf72da0ac55f7600123bea28937",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/steps/primitives/selectFiles.js",
-      "relativePath": "src/agent/steps/primitives/selectFiles.js",
-      "size": 1014,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 39,
-      "hash": "3169d0bd701de85cceefb55973f17cdb46a01079",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/steps/primitives/validateDocOnly.js",
-      "relativePath": "src/agent/steps/primitives/validateDocOnly.js",
-      "size": 1905,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 75,
-      "hash": "10b589005ee9a17d9b366a042ddceb5b6ae2d426",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/steps/primitives/writeFiles.js",
-      "relativePath": "src/agent/steps/primitives/writeFiles.js",
-      "size": 1106,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 46,
-      "hash": "c42847d818a534c8dbe18112c4d23580374eeab1",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/steps/scanner/index.js",
-      "relativePath": "src/agent/steps/scanner/index.js",
-      "size": 53,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 2,
-      "hash": "537af60a103a17787ef5b04b4d1e11af7d7922a8",
-      "skipped": false
-    },
-    {
-      "path": "/Users/Ryttis/mcp-bridge/src/agent/steps/scanner/scanProjectStep.js",
-      "relativePath": "src/agent/steps/scanner/scanProjectStep.js",
-      "size": 854,
-      "extension": "js",
-      "type": "text",
-      "isBinary": false,
-      "lineCount": 32,
-      "hash": "2096200c35346e6783ac85882ba634344d23d28a",
-      "skipped": false
+  "generatedAt": "2026-01-07T22:15:00.000Z",
+  "project": "mcp-server",
+  "overallStatus": "stable-core-established",
+  "confidenceLevel": "high",
+
+  "summary": {
+    "whatWorks": [
+      "MCP Server runs reliably",
+      "core_runRecipe executes scan-project end-to-end",
+      "Runtime owns execution pipeline and state",
+      "serverSnapshot produces high-value project context",
+      "Manual recipe execution works via bridge and server",
+      "Import paths and module boundaries are consistent"
+    ],
+    "whatWasResolved": [
+      "Broken canonical imports (Phase 1)",
+      "Recipe object vs identifier contract violations",
+      "Scattered mcpState ownership",
+      "Invalid snapshot assumptions",
+      "Legacy path leakage from refactors",
+      "ToolError import inconsistencies"
+    ],
+    "currentMentalModel": "Server-centric, runtime-owned state with thin adapters"
+  },
+
+  "architectureStatus": {
+    "authority": {
+      "singleSourceOfTruth": "src/runtime/state",
+      "execution": "src/runtime + src/agent",
+      "transport": "JSON-RPC over WebSocket",
+      "adapters": ["bridge (legacy)", "future CLI"]
+    },
+    "serverRole": [
+      "Owns state lifecycle",
+      "Runs recipes",
+      "Generates periodic snapshots",
+      "Exposes tools via JSON-RPC"
+    ],
+    "runtimeRole": [
+      "Pipeline construction",
+      "State mutation",
+      "Execution determinism",
+      "Snapshot-friendly context"
+    ],
+    "bridgeRole": {
+      "status": "legacy-adapter",
+      "rules": [
+        "No state ownership",
+        "No filesystem access",
+        "No business logic",
+        "Pure transport only"
+      ],
+      "future": "Optional / replaceable"
     }
-  ]
+  },
+
+  "snapshotEvaluation": {
+    "serverSnapshot": {
+      "value": "very_high",
+      "purpose": [
+        "Resume work after break",
+        "Project archaeology",
+        "Human-readable context",
+        "AI handoff without rescanning"
+      ],
+      "produces": [
+        "latest_phr-website.md",
+        "lastContext",
+        "timestamps",
+        "logs",
+        "execution intent"
+      ]
+    },
+    "manualRecipes": {
+      "value": "situational",
+      "purpose": [
+        "Explicit analysis",
+        "File-level operations",
+        "Transformations"
+      ],
+      "note": "Not a replacement for continuous snapshot"
+    }
+  },
+
+  "keyInsight": {
+    "statement": "For resuming work, serverSnapshot is strictly more valuable than manual recipe chains",
+    "reason": [
+      "Captures intent, not just files",
+      "Preserves execution context",
+      "Includes timestamps and causality",
+      "Does not require rerunning scans"
+    ]
+  },
+
+  "currentRisks": {
+    "low": [
+      "Some tools still reference server state directly",
+      "Legacy bridge folder exists (but frozen)"
+    ],
+    "noneCritical": true
+  },
+
+  "whatIsIntentionallyDeferred": [
+    "Full agent wiring from blueprint",
+    "AI transformation steps",
+    "Backup/validate/write pipeline unification",
+    "Bridge feature expansion"
+  ],
+
+  "nextLogicalPhases": {
+    "Phase2C": [
+      "Finalize snapshot semantics",
+      "Decide multi-project snapshot strategy",
+      "Add minimal server CLI (set-project / status)"
+    ],
+    "Phase3": [
+      "OpenAI streaming without file persistence",
+      "UI or editor integration",
+      "Protocol stabilization"
+    ]
+  },
+
+  "workingPrinciples": [
+    "Server owns truth",
+    "Runtime mutates state",
+    "Snapshots are first-class",
+    "CLI is boring by design",
+    "Bridge is optional, not required",
+    "Refactor only with explicit contracts"
+  ],
+
+  "resumeInstruction": {
+    "afterBreak": [
+      "Read headers/latest_phr-website.md",
+      "Inspect lastContext",
+      "Check runtime/state",
+      "Continue from Phase 2C"
+    ],
+    "noNeedTo": [
+      "Rescan project",
+      "Re-run recipes",
+      "Reconstruct mental model"
+    ]
+  }
 }

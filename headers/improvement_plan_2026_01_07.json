@@ -1,0 +1,145 @@
+{
+  "generatedAt": "2026-01-07T00:00:00.000Z",
+  "project": "mcp-bridge",
+  "type": "wiring_suggestions",
+  "source": "implemented_not_wired_features",
+  "globalFixes": [
+    {
+      "id": "fix.wire_local_agent_runner",
+      "title": "Add local agent runner and wire from CLI",
+      "suggestion": "Implement a local runner (e.g. runRecipeLocal) that: loadRecipe -> createContext -> buildPipeline -> executePipeline -> finalizeLogs; expose via bridge.js command (e.g. run-recipe-local) or flag (--local)."
+    },
+    {
+      "id": "fix.align_step_ids",
+      "title": "Align blueprint step IDs with current step IDs",
+      "suggestion": "Add aliases in step registry (preferred) or rename steps/recipes so IDs match: select_files->selectFiles, read->readFiles, ai_doc_header->docHeaderTransform, validate->validateDocOnly, backup->(backupInit+backupFiles or new backup wrapper), write->writeFiles."
+    },
+    {
+      "id": "fix.standardize_recipe_schema",
+      "title": "Standardize recipe schema (type vs using)",
+      "suggestion": "Update recipe loader/validator to support both 'using' (blueprint) and 'type' (current), or migrate all recipes and validation to a single schema consistently."
+    },
+    {
+      "id": "fix.logging_finalize_in_executor",
+      "title": "Ensure finalizeLogs is always called",
+      "suggestion": "Call finalizeLogs(context) in the local executor wrapper at the end of a run (success or failure)."
+    }
+  ],
+  "items": [
+    {
+      "featureId": "agent.engine.context.createContext",
+      "status": "implemented_not_wired",
+      "fix": "Wire into local runner; invoked by executor wrapper when starting a local recipe run."
+    },
+    {
+      "featureId": "agent.engine.context.updateContext",
+      "status": "implemented_not_wired",
+      "fix": "Use in executor wrapper after each step returns mutations (already used by executePipeline, but only becomes effective when local runner is wired)."
+    },
+    {
+      "featureId": "agent.engine.context.addLog_addError",
+      "status": "implemented_not_wired",
+      "fix": "Wire into local runner; optionally route logger.js through addLog/addError for consistent logging semantics."
+    },
+    {
+      "featureId": "agent.engine.executor.executePipeline",
+      "status": "implemented_not_wired",
+      "fix": "Create a runRecipe wrapper that calls executePipeline; wire wrapper to CLI via new command/flag."
+    },
+    {
+      "featureId": "agent.engine.pipeline.buildPipeline",
+      "status": "implemented_not_wired",
+      "fix": "Call buildPipeline from the new runRecipe wrapper; ensure recipe schema fields (id/type/params) are consistent."
+    },
+    {
+      "featureId": "agent.steps.loader.registry_based_resolution",
+      "status": "implemented_not_wired",
+      "fix": "After wiring local runner, ensure registry exports include aliases for blueprint IDs so loader resolves blueprint recipes."
+    },
+    {
+      "featureId": "agent.scanner.scanProject",
+      "status": "implemented_not_wired",
+      "fix": "Ensure local recipes include scan_project and local runner executes them; optionally expose as a CLI 'scan-local' command for quick verification."
+    },
+    {
+      "featureId": "agent.scanner.detectFileType_isBinary",
+      "status": "implemented_not_wired",
+      "fix": "No special wiring needed beyond scanProject being used; keep consistent ignore/size policies with recipes."
+    },
+    {
+      "featureId": "agent.step.scan_project",
+      "status": "implemented_not_wired",
+      "fix": "Include step in a wired local recipe and execute via local runner (run-recipe-local / --local)."
+    },
+    {
+      "featureId": "agent.step.selectFiles",
+      "status": "implemented_not_wired",
+      "fix": "Add alias export 'select_files' that maps to selectFiles (or update recipe step IDs)."
+    },
+    {
+      "featureId": "agent.step.readFiles",
+      "status": "implemented_not_wired",
+      "fix": "Add alias export 'read' that maps to readFiles; optionally switch implementation to use IO layer (MCP-first) once IO is fixed."
+    },
+    {
+      "featureId": "agent.step.docHeaderTransform",
+      "status": "implemented_not_wired",
+      "fix": "Add alias export 'ai_doc_header' that maps to docHeaderTransform; add strict checks (no markdown / one header only) if you want blueprint parity."
+    },
+    {
+      "featureId": "agent.step.validateDocOnly",
+      "status": "implemented_not_wired",
+      "fix": "Add alias export 'validate' that maps to validateDocOnly; expand validator to match blueprint rules if needed (commentStyle, checksum-outside-header, language support)."
+    },
+    {
+      "featureId": "agent.step.backupInit",
+      "status": "implemented_not_wired",
+      "fix": "Include in wired local recipe; alternatively replace with a single 'backup' wrapper step for blueprint parity."
+    },
+    {
+      "featureId": "agent.step.backupFiles",
+      "status": "implemented_not_wired",
+      "fix": "Fix return-shape mismatch: read backup paths from result.mutations.backupPaths (or adjust backupAllSelectedFiles to return backupPaths at top-level). Then wire via local recipe."
+    },
+    {
+      "featureId": "agent.backup.initializeBackupRoot",
+      "status": "implemented_not_wired",
+      "fix": "Call during local run before backupAllSelectedFiles; add dryRun guard in the step layer."
+    },
+    {
+      "featureId": "agent.backup.writeBackupFile",
+      "status": "implemented_not_wired",
+      "fix": "No special wiring beyond backupAllSelectedFiles usage once local runner is wired."
+    },
+    {
+      "featureId": "agent.backup.backupAllSelectedFiles",
+      "status": "implemented_not_wired",
+      "fix": "Wire via backup step in local recipe; ensure it updates context.backupPaths/backupFiles consistently."
+    },
+    {
+      "featureId": "agent.step.writeFiles",
+      "status": "implemented_not_wired",
+      "fix": "Add alias export 'write' that maps to writeFiles; enforce validation gating either in this step (recommended) or centrally in executor wrapper."
+    },
+    {
+      "featureId": "agent.logging.logInfo_logError_logStep",
+      "status": "implemented_not_wired",
+      "fix": "Call finalizeLogs(context) from local executor wrapper at end of run; optionally add verbosity flag plumbing from CLI."
+    },
+    {
+      "featureId": "agent.recipes.loader.loadRecipe",
+      "status": "implemented_not_wired",
+      "fix": "Wire to local runner; standardize schema (support using/type); ensure step IDs match loader expectations."
+    },
+    {
+      "featureId": "agent.recipes.validator.validateRecipe",
+      "status": "implemented_not_wired",
+      "fix": "Validate the same step key used by loader (id/type/using); wire validator into local runner before execution."
+    },
+    {
+      "featureId": "agent.integration.mcp.connect_call",
+      "status": "implemented_not_wired",
+      "fix": "Either refactor bridge.js to reuse this client (single JSON-RPC transport), or wire it into IO layer and steps (read/write/backup via MCP)."
+    }
+  ]
+}

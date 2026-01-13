@@ -1,43 +1,46 @@
 /**
- * Recipe Validator (v1)
+ * Recipe Validator (v3)
  *
- * Ensures recipe has:
- * - name (string)
- * - steps (array)
- * - each step has: { id: string }
+ * Validates RAW YAML recipe structure.
+ * This MUST receive the parsed YAML object.
  */
 
-import { logError, logStep } from "../logging/logger.js";
-import { loadPrimitiveStep } from "../steps/loader.js";
-
-export function validateRecipe(context, recipe) {
-    if (!recipe || typeof recipe !== "object") {
-        throw new Error("Invalid recipe: not an object");
+export function validateRecipe(raw) {
+    // 🔍 hard diagnostic (remove later)
+    if (raw === undefined) {
+        throw new Error("Invalid recipe: validator received undefined");
     }
 
-    if (!recipe.name || typeof recipe.name !== "string") {
-        throw new Error("Invalid recipe: missing 'name'");
+    if (raw === null) {
+        throw new Error("Invalid recipe: validator received null");
     }
 
-    if (!Array.isArray(recipe.steps)) {
-        throw new Error("Invalid recipe: 'steps' must be an array");
+    if (typeof raw !== "object" || Array.isArray(raw)) {
+        throw new Error(
+            `Invalid recipe: not an object (got ${typeof raw})`
+        );
     }
 
-    logStep(context, "recipe", `Validating recipe '${recipe.name}'`);
+    if (!Array.isArray(raw.steps)) {
+        throw new Error("Invalid recipe: missing or invalid 'steps' array");
+    }
 
-    for (const step of recipe.steps) {
-        if (typeof step !== "object" || !step.id) {
-            throw new Error(`Invalid recipe step: ${JSON.stringify(step)}`);
+    if (raw.steps.length === 0) {
+        throw new Error("Invalid recipe: steps[] cannot be empty");
+    }
+
+    raw.steps.forEach((step, index) => {
+        if (!step || typeof step !== "object") {
+            throw new Error(`Invalid step at index ${index}: not an object`);
         }
 
-        try {
-            // Will throw if unknown
-            loadPrimitiveStep(step.id);
-        } catch (err) {
-            logError(context, `Recipe step '${step.id}' is invalid: ${err.message}`);
-            throw err;
+        if (!step.type || typeof step.type !== "string") {
+            throw new Error(`Invalid step at index ${index}: missing 'type'`);
         }
-    }
+    });
 
     return true;
 }
+
+// ✅ default export to prevent ESM mismatch bugs
+export default validateRecipe;

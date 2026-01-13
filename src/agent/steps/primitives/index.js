@@ -8,3 +8,9 @@ export * as validateDocOnly from "./validateDocOnly.js";
 export * as selectFiles from "./selectFiles.js";
 export * as backupInit from "./backupInit.js";
 export * as backupFiles from "./backupFiles.js";
+export { analyzeStructure } from "./analyzeStructure.js";
+export { analyzeSemantic } from "./analyzeSemantic.js";
+export { analyzeBehavior } from "./analyzeBehavior.js";
+export { analyzeIntent } from "./analyzeIntent.js";
+
+

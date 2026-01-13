@@ -1,1 +1,5 @@
-export { scan_project } from "./scanProjectStep.js";
+import scanProjectStep from "./scanProjectStep.js";
+
+export default {
+    ...scanProjectStep
+};

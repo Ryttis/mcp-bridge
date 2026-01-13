@@ -1,6 +1,29 @@
 name: scan-project
-version: 1
-description: Scan project directory and collect metadata.
+description: Scan project files, analyze structure, and persist snapshot
 
 steps:
-  - type: scan_project
+  - id: scan
+    type: scan-project
+    root: .
+    exclude:
+      - node_modules/**
+      - .git/**
+      - .idea/**
+
+  - id: structure
+    type: analyzeStructure
+
+  - id: semantic
+    type : analyzeSemantic
+
+  - id: behavior
+    type: analyzeBehavior
+
+  - id: intent
+    type: analyzeIntent
+
+  - id: persist
+    type: writeFiles
+    target: headers
+    filename: scan-project_{date}.json
+    source: state

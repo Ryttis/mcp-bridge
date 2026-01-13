@@ -1,38 +1,27 @@
-// src/bridge/utils.js
-import WebSocket from "ws";
 import { toolDescriptions } from "./descriptions.js";
+import { rpcCallOnce } from "./rpcClient.js";
 
 export async function listTools(serverUrl) {
-    return new Promise((resolve, reject) => {
-        const ws = new WebSocket(serverUrl);
-
-        ws.on("open", () => {
-            // ✅ Proper JSON-RPC message
-            ws.send(JSON.stringify({
-                jsonrpc: "2.0",
-                id: 1,
-                method: "core_listDir",
-                params: { path: "./tools" }
-            }));
+    try {
+        await rpcCallOnce({
+            url: serverUrl,
+            method: "core_listDir",
+            params: { path: "./tools" },
+            timeoutMs: 15000
         });
+    } catch (err) {
+        const code = err?.code || err?.kernelError?.code;
 
-        ws.on("message", (msg) => {
-            try {
-                const data = JSON.parse(msg);
-                if (!data.result) return;
+        // Server/kernel API mismatch: don't crash the bridge just because listDir isn't available.
+        if (code !== "UNKNOWN_METHOD") {
+            throw err;
+        }
 
-                console.log("\n🧩 Available Tools:\n");
-                Object.entries(toolDescriptions).forEach(([key, desc]) => {
-                    console.log(`• ${key.padEnd(25)} — ${desc}`);
-                });
+        console.warn(`⚠️ Kernel does not expose core_listDir; skipping remote tool listing.`);
+    }
 
-                ws.close();
-                resolve();
-            } catch (err) {
-                reject(err);
-            }
-        });
-
-        ws.on("error", (err) => reject(err));
+    console.log("\n🧩 Available Tools:\n");
+    Object.entries(toolDescriptions).forEach(([key, desc]) => {
+        console.log(`• ${key.padEnd(25)} — ${desc}`);
     });
 }

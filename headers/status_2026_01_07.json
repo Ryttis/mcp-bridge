@@ -1,0 +1,745 @@
+{
+  "generatedAt": "2026-01-07T00:00:00.000Z",
+  "project": "mcp-bridge",
+  "scope": {
+    "serverRuntime": "out_of_scope",
+    "evaluationMethod": "static_evidence_only",
+    "statusModel": [
+      "implemented_wired_working",
+      "implemented_not_wired",
+      "planned_not_implemented"
+    ],
+    "notes": [
+      "bridge.js is kernel-first (WebSocket JSON-RPC) for analyze/run-recipe.",
+      "Local src/agent implementation exists but is not wired into bridge.js flow.",
+      "Some blueprint step IDs differ from current step IDs (e.g. read vs readFiles). These are tracked as separate granular features with mismatch notes."
+    ]
+  },
+  "evidenceFilesRead": [
+    "blueprint/architecture/structure.json",
+    "blueprint/roadmap/roadmap.json",
+    "blueprint/engine/context.json",
+    "blueprint/engine/executor.json",
+    "blueprint/engine/pipeline.json",
+    "blueprint/steps/primitives.json",
+    "blueprint/scanner/scanner.json",
+    "blueprint/validation/validation.json",
+    "blueprint/integration/bridge.json",
+    "blueprint/logging/logging.json",
+    "blueprint/backup/backup.json",
+    "blueprint/ai/transformation.json",
+    "blueprint/recipes/sechema.json",
+    "blueprint/recipes/schema.yaml",
+    "package.json",
+    "bridge.js",
+    "src/bridge/agent.js",
+    "src/bridge/agent/index.js",
+    "src/agent/engine/context.js",
+    "src/agent/engine/executor.js",
+    "src/agent/engine/pipeline.js",
+    "src/agent/steps/loader.js",
+    "src/agent/steps/primitives/index.js",
+    "src/agent/steps/scanner/index.js",
+    "src/agent/steps/scanner/scanProjectStep.js",
+    "src/agent/scanner/index.js",
+    "src/agent/scanner/fileType.js",
+    "src/agent/recipes/loader.js",
+    "src/agent/recipes/validator.js",
+    "src/agent/logging/logger.js",
+    "src/agent/logging/formatter.js",
+    "src/agent/backup/manager.js",
+    "src/agent/steps/primitives/validateDocOnly.js",
+    "src/agent/steps/primitives/readFiles.js",
+    "src/agent/steps/primitives/writeFiles.js",
+    "src/agent/steps/primitives/selectFiles.js",
+    "src/agent/steps/primitives/backupInit.js",
+    "src/agent/steps/primitives/backupFiles.js",
+    "src/agent/steps/ai/docHeaderTransform.js",
+    "src/agent/integration/mcp.js",
+    "src/agent/integration/io.js"
+  ],
+  "features": [
+    {
+      "id": "bridge.cli.analyze",
+      "area": "bridge",
+      "blueprintRefs": [
+        "blueprint/integration/bridge.json"
+      ],
+      "status": "implemented_wired_working",
+      "implementationRefs": {
+        "files": [
+          "bridge.js"
+        ],
+        "symbols": [
+          "command:analyze",
+          "JSON-RPC method:core_analyzeFile"
+        ]
+      },
+      "notes": [
+        "Uses WebSocket JSON-RPC to MCP kernel; local agent is not involved."
+      ]
+    },
+    {
+      "id": "bridge.cli.run-recipe.kernel",
+      "area": "bridge",
+      "blueprintRefs": [
+        "blueprint/integration/bridge.json"
+      ],
+      "status": "implemented_wired_working",
+      "implementationRefs": {
+        "files": [
+          "bridge.js"
+        ],
+        "symbols": [
+          "command:run-recipe",
+          "JSON-RPC method:core_runRecipe"
+        ]
+      },
+      "notes": [
+        "This is kernel-only execution; does not use src/agent engine locally."
+      ]
+    },
+    {
+      "id": "bridge.cli.improve",
+      "area": "bridge",
+      "blueprintRefs": [
+        "blueprint/integration/bridge.json"
+      ],
+      "status": "planned_not_implemented",
+      "implementationRefs": {
+        "files": [
+          "bridge.js",
+          "src/bridge/agent.js",
+          "src/bridge/agent/index.js"
+        ]
+      },
+      "notes": [
+        "CLI has improve command, but local improveFile throws ('moved to kernel').",
+        "Treating as not implemented in this repo because it is not working locally."
+      ]
+    },
+    {
+      "id": "agent.engine.context.createContext",
+      "area": "agent.engine",
+      "blueprintRefs": [
+        "blueprint/engine/context.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/engine/context.js"
+        ],
+        "symbols": [
+          "createContext"
+        ]
+      },
+      "notes": [
+        "Implements default RunOptions including dryRun/verbose/mcpOnly/fsFallback.",
+        "Not wired to bridge.js runtime flow."
+      ]
+    },
+    {
+      "id": "agent.engine.context.updateContext",
+      "area": "agent.engine",
+      "blueprintRefs": [
+        "blueprint/engine/context.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/engine/context.js"
+        ],
+        "symbols": [
+          "updateContext"
+        ]
+      }
+    },
+    {
+      "id": "agent.engine.context.addLog_addError",
+      "area": "agent.engine",
+      "blueprintRefs": [
+        "blueprint/engine/context.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/engine/context.js"
+        ],
+        "symbols": [
+          "addLog",
+          "addError"
+        ]
+      }
+    },
+    {
+      "id": "agent.engine.context.persist_run_record",
+      "area": "agent.engine",
+      "blueprintRefs": [
+        "blueprint/engine/context.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Blueprint requires writing .ai/runs/{timestamp}.json; no evidence found in read files."
+      ]
+    },
+    {
+      "id": "agent.engine.executor.runRecipe",
+      "area": "agent.engine",
+      "blueprintRefs": [
+        "blueprint/engine/executor.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Local executor provides executePipeline(context, pipeline), not runRecipe/loadRecipe API as specified."
+      ]
+    },
+    {
+      "id": "agent.engine.executor.executePipeline",
+      "area": "agent.engine",
+      "blueprintRefs": [
+        "blueprint/engine/executor.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/engine/executor.js"
+        ],
+        "symbols": [
+          "executePipeline"
+        ]
+      },
+      "notes": [
+        "Executes steps sequentially, logs begin/end, applies mutations, stops on error.",
+        "Not invoked by bridge.js in current repo."
+      ]
+    },
+    {
+      "id": "agent.engine.pipeline.runPipeline",
+      "area": "agent.engine",
+      "blueprintRefs": [
+        "blueprint/engine/pipeline.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Blueprint expects runPipeline(recipe, context). Local code provides buildPipeline(context, recipe, runtimeParams)."
+      ]
+    },
+    {
+      "id": "agent.engine.pipeline.buildPipeline",
+      "area": "agent.engine",
+      "blueprintRefs": [
+        "blueprint/engine/pipeline.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/engine/pipeline.js",
+          "src/agent/steps/loader.js"
+        ],
+        "symbols": [
+          "buildPipeline",
+          "loadPrimitiveStep"
+        ]
+      },
+      "notes": [
+        "Builds steps based on stepDef.id/type; uses step loader registry (primitives/ai/scanner).",
+        "Step resolution differs from blueprint search_order (uses registry exports instead of dynamic path search)."
+      ]
+    },
+    {
+      "id": "agent.steps.loader.registry_based_resolution",
+      "area": "agent.steps",
+      "blueprintRefs": [
+        "blueprint/engine/pipeline.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/steps/loader.js"
+        ],
+        "symbols": [
+          "loadPrimitiveStep"
+        ]
+      },
+      "notes": [
+        "Resolves steps by looking up exports in primitives/ai/scanner index modules.",
+        "Normalizes named export vs default object export to ensure run() exists."
+      ]
+    },
+    {
+      "id": "agent.scanner.scanProject",
+      "area": "agent.scanner",
+      "blueprintRefs": [
+        "blueprint/scanner/scanner.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/scanner/index.js"
+        ],
+        "symbols": [
+          "scanProject"
+        ]
+      },
+      "notes": [
+        "Implements BFS directory walk, ignore dirs, ignore files, MAX_SIZE=1MB, sha1 hashing for text.",
+        "Not wired to bridge.js runtime flow."
+      ]
+    },
+    {
+      "id": "agent.scanner.detectFileType_isBinary",
+      "area": "agent.scanner",
+      "blueprintRefs": [
+        "blueprint/scanner/scanner.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/scanner/fileType.js"
+        ],
+        "symbols": [
+          "detectFileType",
+          "isBinary"
+        ]
+      },
+      "notes": [
+        "Binary heuristic differs from blueprint guidance (but still provides binary detection)."
+      ]
+    },
+    {
+      "id": "agent.step.scan_project",
+      "area": "agent.steps.scanner",
+      "blueprintRefs": [
+        "blueprint/steps/primitives.json",
+        "blueprint/scanner/scanner.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/steps/scanner/index.js",
+          "src/agent/steps/scanner/scanProjectStep.js"
+        ],
+        "symbols": [
+          "scan_project.run"
+        ]
+      }
+    },
+    {
+      "id": "agent.step.select_files",
+      "area": "agent.steps.primitives",
+      "blueprintRefs": [
+        "blueprint/steps/primitives.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Blueprint expects step id 'select_files'. Local implementation exists as selectFiles (different id/export)."
+      ]
+    },
+    {
+      "id": "agent.step.selectFiles",
+      "area": "agent.steps.primitives",
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/steps/primitives/selectFiles.js",
+          "src/agent/steps/primitives/index.js"
+        ],
+        "symbols": [
+          "selectFiles.run"
+        ]
+      },
+      "notes": [
+        "Uses fast-glob, supports patterns/root/ignore; outputs selectedFiles and rootPath mutations."
+      ]
+    },
+    {
+      "id": "agent.step.read",
+      "area": "agent.steps.primitives",
+      "blueprintRefs": [
+        "blueprint/steps/primitives.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Blueprint expects step id 'read'. Local implementation exists as readFiles (different id/export)."
+      ]
+    },
+    {
+      "id": "agent.step.readFiles",
+      "area": "agent.steps.primitives",
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/steps/primitives/readFiles.js",
+          "src/agent/steps/primitives/index.js"
+        ],
+        "symbols": [
+          "readFiles.run"
+        ]
+      },
+      "notes": [
+        "Reads from local filesystem directly; does not use MCP-first IO as blueprint describes."
+      ]
+    },
+    {
+      "id": "agent.step.ai_doc_header",
+      "area": "agent.steps.ai",
+      "blueprintRefs": [
+        "blueprint/steps/primitives.json",
+        "blueprint/ai/transformation.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Blueprint expects step id 'ai_doc_header' and AI module under src/agent/ai/*. Local AI step exists as docHeaderTransform (different id/path)."
+      ]
+    },
+    {
+      "id": "agent.step.docHeaderTransform",
+      "area": "agent.steps.ai",
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/steps/ai/docHeaderTransform.js"
+        ],
+        "symbols": [
+          "docHeaderTransform.run"
+        ]
+      },
+      "notes": [
+        "Uses OpenAI SDK directly; requires OPENAI_API_KEY; writes aiOutputs mutations."
+      ]
+    },
+    {
+      "id": "agent.step.validate",
+      "area": "agent.steps.primitives",
+      "blueprintRefs": [
+        "blueprint/steps/primitives.json",
+        "blueprint/validation/validation.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Blueprint expects step id 'validate' and validation layer APIs (detectHeaderBlock, checksum strategy). Local implementation differs (validateDocOnly)."
+      ]
+    },
+    {
+      "id": "agent.step.validateDocOnly",
+      "area": "agent.steps.primitives",
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/steps/primitives/validateDocOnly.js",
+          "src/agent/steps/primitives/index.js"
+        ],
+        "symbols": [
+          "validateDocOnly.run"
+        ]
+      },
+      "notes": [
+        "Strictly enforces JSDoc-at-top for JS only; disallows pre-existing JSDoc header; does not implement commentStyle/language abstraction or checksum strategy."
+      ]
+    },
+    {
+      "id": "agent.step.backup",
+      "area": "agent.steps.primitives",
+      "blueprintRefs": [
+        "blueprint/steps/primitives.json",
+        "blueprint/backup/backup.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Blueprint expects a single 'backup' step. Local implementation splits backupInit + backupFiles, and backupFiles appears to have a bug in mutations mapping."
+      ]
+    },
+    {
+      "id": "agent.step.backupInit",
+      "area": "agent.steps.primitives",
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/steps/primitives/backupInit.js",
+          "src/agent/steps/primitives/index.js"
+        ],
+        "symbols": [
+          "backupInit.run"
+        ]
+      }
+    },
+    {
+      "id": "agent.step.backupFiles",
+      "area": "agent.steps.primitives",
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/steps/primitives/backupFiles.js",
+          "src/agent/backup/manager.js"
+        ],
+        "symbols": [
+          "backupFiles.run",
+          "backupAllSelectedFiles"
+        ]
+      },
+      "notes": [
+        "Likely bug: backupFiles expects result.backupPaths/result.backupFiles, but backupAllSelectedFiles returns { mutations: { backupPaths } }."
+      ]
+    },
+    {
+      "id": "agent.backup.initializeBackupRoot",
+      "area": "agent.backup",
+      "blueprintRefs": [
+        "blueprint/backup/backup.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/backup/manager.js"
+        ],
+        "symbols": [
+          "initializeBackupRoot"
+        ]
+      },
+      "notes": [
+        "Writes backups under {rootPath}/.mcp_backups/{timestamp} (timestamp sanitized)."
+      ]
+    },
+    {
+      "id": "agent.backup.writeBackupFile",
+      "area": "agent.backup",
+      "blueprintRefs": [
+        "blueprint/backup/backup.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/backup/manager.js"
+        ],
+        "symbols": [
+          "writeBackupFile"
+        ]
+      }
+    },
+    {
+      "id": "agent.backup.backupAllSelectedFiles",
+      "area": "agent.backup",
+      "blueprintRefs": [
+        "blueprint/backup/backup.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/backup/manager.js"
+        ],
+        "symbols": [
+          "backupAllSelectedFiles"
+        ]
+      }
+    },
+    {
+      "id": "agent.backup.hybrid_io_mcp_first",
+      "area": "agent.backup",
+      "blueprintRefs": [
+        "blueprint/backup/backup.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Backup manager uses filesystem writes only; no evidence of MCP-first backup IO."
+      ]
+    },
+    {
+      "id": "agent.step.write",
+      "area": "agent.steps.primitives",
+      "blueprintRefs": [
+        "blueprint/steps/primitives.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Blueprint expects step id 'write' with validation gating and MCP-first strategy. Local implementation exists as writeFiles (different id; writes based on passed params.updates)."
+      ]
+    },
+    {
+      "id": "agent.step.writeFiles",
+      "area": "agent.steps.primitives",
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/steps/primitives/writeFiles.js",
+          "src/agent/steps/primitives/index.js"
+        ],
+        "symbols": [
+          "writeFiles.run"
+        ]
+      },
+      "notes": [
+        "Writes directly to filesystem; does not enforce validation gating by itself; expects caller to pass updates."
+      ]
+    },
+    {
+      "id": "agent.step.log",
+      "area": "agent.steps.primitives",
+      "blueprintRefs": [
+        "blueprint/steps/primitives.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Blueprint expects a primitive 'log' step. No evidence found in read files."
+      ]
+    },
+    {
+      "id": "agent.logging.logInfo_logError_logStep",
+      "area": "agent.logging",
+      "blueprintRefs": [
+        "blueprint/logging/logging.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/logging/logger.js",
+          "src/agent/logging/formatter.js"
+        ],
+        "symbols": [
+          "logInfo",
+          "logError",
+          "logStep",
+          "finalizeLogs"
+        ]
+      },
+      "notes": [
+        "Implements .ai/logs/{timestamp}.log persistence via finalizeLogs, but we have not seen executor calling finalizeLogs."
+      ]
+    },
+    {
+      "id": "agent.logging.finalizeLogs_called_by_executor",
+      "area": "agent.logging",
+      "blueprintRefs": [
+        "blueprint/logging/logging.json",
+        "blueprint/engine/executor.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "No evidence that executor calls finalizeLogs in local engine."
+      ]
+    },
+    {
+      "id": "agent.recipes.loader.loadRecipe",
+      "area": "agent.recipes",
+      "blueprintRefs": [
+        "blueprint/recipes/sechema.json",
+        "blueprint/recipes/schema.yaml"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/recipes/loader.js"
+        ],
+        "symbols": [
+          "loadRecipe"
+        ]
+      },
+      "notes": [
+        "Recipe format differs: expects step.type, not step.using; validator checks step.id existence; blueprint expects using/id/params."
+      ]
+    },
+    {
+      "id": "agent.recipes.validator.validateRecipe",
+      "area": "agent.recipes",
+      "blueprintRefs": [
+        "blueprint/recipes/sechema.json",
+        "blueprint/recipes/schema.yaml"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/recipes/validator.js"
+        ],
+        "symbols": [
+          "validateRecipe"
+        ]
+      },
+      "notes": [
+        "Validator requires step.id; loader sets id=step.id||step.type.",
+        "Blueprint expects validation of step.using and options merge; not evidenced."
+      ]
+    },
+    {
+      "id": "agent.recipes.builtin.docOnly_analyzeOnly",
+      "area": "agent.recipes",
+      "blueprintRefs": [
+        "blueprint/recipes/sechema.json",
+        "blueprint/recipes/schema.yaml"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Blueprint expects builtin recipes docOnly.yaml and analyzeOnly.yaml with specific step ids.",
+        "Unable to confirm builtin recipe files/contents due to tool-call limit while listing src/agent/recipes/builtin/*.yaml."
+      ]
+    },
+    {
+      "id": "agent.integration.mcp.connect_call",
+      "area": "agent.integration",
+      "blueprintRefs": [
+        "blueprint/integration/bridge.json"
+      ],
+      "status": "implemented_not_wired",
+      "implementationRefs": {
+        "files": [
+          "src/agent/integration/mcp.js"
+        ],
+        "symbols": [
+          "connectMCP",
+          "callMCP"
+        ]
+      },
+      "notes": [
+        "Provides a generic JSON-RPC client; independent of bridge.js which uses its own WebSocket calls."
+      ]
+    },
+    {
+      "id": "agent.integration.io.readFileViaIO",
+      "area": "agent.integration",
+      "blueprintRefs": [
+        "blueprint/scanner/scanner.json",
+        "blueprint/steps/primitives.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "io.js references callMCPReadFile which is not defined/exported in mcp.js (static mismatch).",
+        "Therefore MCP-first hybrid read as described is not properly implemented."
+      ]
+    },
+    {
+      "id": "agent.ai.client_module",
+      "area": "agent.ai",
+      "blueprintRefs": [
+        "blueprint/ai/transformation.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Blueprint expects src/agent/ai/client.js and src/agent/ai/docHeader.js. Not evidenced in files read; current OpenAI usage is inside steps/ai/docHeaderTransform.js."
+      ]
+    },
+    {
+      "id": "agent.validation.layer_api",
+      "area": "agent.validation",
+      "blueprintRefs": [
+        "blueprint/validation/validation.json"
+      ],
+      "status": "planned_not_implemented",
+      "notes": [
+        "Blueprint expects validation APIs (validateDocOnly, detectHeaderBlock, normalizeWhitespace, checksum strategy).",
+        "Local validation exists only as a primitive step validateDocOnly with JS-specific JSDoc rules."
+      ]
+    }
+  ],
+  "summary": {
+    "counts": {
+      "implemented_wired_working": 2,
+      "implemented_not_wired": 22,
+      "planned_not_implemented": 16
+    },
+    "highImpactGaps": [
+      "bridge.cli.improve is not working locally (stub throws).",
+      "Local agent engine is not wired into bridge.js; CLI runs via kernel RPC for core actions.",
+      "Step ID/schema mismatch between blueprint recipes/steps and current local step registry (read vs readFiles, backup vs backupFiles, validate vs validateDocOnly, ai_doc_header vs docHeaderTransform).",
+      "Hybrid IO layer appears broken (io.js references callMCPReadFile not present in mcp.js).",
+      "Builtin recipe set cannot be confirmed in this run (tool-call limit)."
+    ]
+  }
+}

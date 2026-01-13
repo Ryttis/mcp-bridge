@@ -1,1 +1,1 @@
-export { improveFile } from "./agent/index.js";
+export { improveFile } from "./agentAdapter.js";

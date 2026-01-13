@@ -21,7 +21,7 @@ export function buildPipeline(context, recipe, runtimeParams = {}) {
 
         const id = stepDef.id || stepDef.type;
 
-        const stepImpl = loadPrimitiveStep(id);
+        const stepImpl = loadPrimitiveStep(stepDef.type);
 
         const step = {
             id,

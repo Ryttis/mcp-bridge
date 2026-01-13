@@ -6,6 +6,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+package-lock.json
+npm-shrinkwrap.json
 
 # ---------------------------------------
 # Environment / Secrets
@@ -16,55 +18,64 @@ pnpm-debug.log*
 *.env
 
 # ---------------------------------------
-# System
+# System / OS
 # ---------------------------------------
 .DS_Store
 Thumbs.db
-.idea/
-.vscode/
 *.swp
+*.bak
+*.tmp
+*.temp
 
 # ---------------------------------------
-# Build / Cache
+# IDEs
+# ---------------------------------------
+.idea/
+.vscode/
+*.iml
+
+# ---------------------------------------
+# Build / Cache / Coverage
 # ---------------------------------------
 dist/
 build/
 .cache/
 .tmp/
 coverage/
-
+temp/
+tmp/
+sandbox/
+headers/
+blueprint/
 # ---------------------------------------
 # Logs
 # ---------------------------------------
 logs/
 *.log
-logs/*.log
 src/**/debug.log
 
 # ---------------------------------------
-# Runtime (Universal Agent)
+# Agent Runtime (volatile)
 # ---------------------------------------
-# Keep folder, ignore contents
 .ai/logs/*
 .ai/runs/*
 .ai/tmp/*
 .ai/cache/*
 
-# But keep directory itself
+# keep directories
 !.ai/
 !.ai/logs/
 !.ai/runs/
 !.ai/recipes/
 
 # ---------------------------------------
-# MCP Backup Storage
+# MCP Backup Storage (local only)
 # ---------------------------------------
-# Keep directory, ignore content
 .mcp_backups/*
 !.mcp_backups/
 
 # ---------------------------------------
-# Compiled binaries / temp files
+# Compiled / runtime artifacts
 # ---------------------------------------
 *.out
 *.exe
@@ -72,28 +83,6 @@ src/**/debug.log
 *.seed
 
 # ---------------------------------------
-# OS-level trash
-# ---------------------------------------
-*.bak
-*.tmp
-*.temp
-
-# ---------------------------------------
-# JetBrains IDE
-# ---------------------------------------
-*.iml
-.idea/
-
-# ---------------------------------------
 # Local test artifacts
 # ---------------------------------------
 test-logpilot.js
-temp/
-tmp/
-sandbox/
-
-# ---------------------------------------
-# Symlink artifacts or lock files
-# ---------------------------------------
-package-lock.json
-npm-shrinkwrap.json

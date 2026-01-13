@@ -1,0 +1,65 @@
+{
+  "project": "mcp-bridge",
+  "version": "v1",
+  "frozenAt": "2025-12-27",
+  "role": "CLI adapter and transport layer between user/agent and MCP Server",
+  "entrypoint": {
+    "type": "cli",
+    "file": "bridge.js",
+    "usage": "node bridge.js <command> [...args]",
+    "env": ["AUTH_TOKEN"]
+  },
+  "server": {
+    "protocol": "websocket",
+    "url": "ws://localhost:4000",
+    "auth": "query token",
+    "rpc": "json-rpc-2.0"
+  },
+  "commands": [
+    {
+      "name": "analyze",
+      "usage": "node bridge.js analyze <file>",
+      "args": ["file"],
+      "description": "Analyze a file using MCP tools and AI.",
+      "flow": "bridge -> MCP server -> AI -> console output",
+      "stability": "v1-frozen"
+    },
+    {
+      "name": "improve",
+      "usage": "node bridge.js improve <file> [instructions]",
+      "args": ["file", "instructions?"],
+      "description": "Improve a file with AI and write updated version to disk.",
+      "flow": "bridge -> MCP -> AI -> writeImproved",
+      "stability": "v1-frozen"
+    },
+    {
+      "name": "run-recipe",
+      "usage": "node bridge.js run-recipe <recipeName> [path]",
+      "args": ["recipeName", "path?"],
+      "description": "Run a Universal Agent recipe against an optional path.",
+      "flow": "bridge agent engine executes multi-step MCP calls",
+      "stability": "v1-frozen"
+    },
+    {
+      "name": "interactive",
+      "usage": "node bridge.js",
+      "args": [],
+      "description": "Start interactive REPL mode to explore and call MCP tools.",
+      "flow": "readline -> MCP websocket -> console",
+      "stability": "v1-frozen"
+    }
+  ],
+  "invariants": [
+    "Bridge exposes only CLI interfaces, no HTTP server.",
+    "All business logic lives in MCP Server, not in bridge.",
+    "Bridge forwards user intent to MCP via JSON-RPC.",
+    "Bridge may not mutate project state except via explicit commands.",
+    "AUTH_TOKEN is required for any MCP connection."
+  ],
+  "non-goals": [
+    "No UI responsibilities.",
+    "No tool logic implementation.",
+    "No persistent state or memory management.",
+    "No direct filesystem scanning beyond command needs."
+  ]
+}

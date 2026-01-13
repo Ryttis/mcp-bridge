@@ -1,0 +1,103 @@
+{
+  "name": "mcp-bridge-rules",
+  "version": "v1",
+  "description": "Rules and invariants for the MCP Bridge as a pure adapter and transport layer.",
+  "role": "Adapter between CLI/UI/agents and the MCP Server kernel.",
+  "principles": [
+    {
+      "id": "adapter-only",
+      "text": "Bridge acts only as an adapter and transport layer. It does not implement business logic."
+    },
+    {
+      "id": "kernel-is-source-of-truth",
+      "text": "All business rules and domain logic live in MCP Server tools."
+    },
+    {
+      "id": "no-filesystem",
+      "text": "Bridge must not read or write project files directly."
+    },
+    {
+      "id": "no-state",
+      "text": "Bridge must not maintain persistent state or memory."
+    },
+    {
+      "id": "errors-mapped",
+      "text": "Bridge errors must be derived from ToolError returned by the kernel."
+    },
+    {
+      "id": "interfaces-frozen",
+      "text": "Public CLI interfaces are frozen as v1 during this milestone."
+    }
+  ],
+  "must": [
+    "Parse CLI arguments",
+    "Validate user input shape",
+    "Open WebSocket connection to MCP Server",
+    "Forward JSON-RPC calls to kernel tools",
+    "Stream results to console or caller",
+    "Map kernel errors to bridge-level errors"
+  ],
+  "must_not": [
+    "Implement business or domain logic",
+    "Read or write arbitrary project files",
+    "Scan directories or projects",
+    "Mutate kernel state directly",
+    "Call external APIs except MCP Server",
+    "Persist data to disk or database"
+  ],
+  "boundaries": {
+    "allowed_io": [
+      "stdin",
+      "stdout",
+      "stderr",
+      "process args",
+      "environment variables",
+      "websocket to MCP Server"
+    ],
+    "forbidden_io": [
+      "filesystem (fs, fs/promises)",
+      "database access",
+      "network calls to third-party APIs",
+      "direct OS command execution"
+    ]
+  },
+  "error_policy": {
+    "source": "MCP Server ToolError",
+    "mapping": [
+      "TIMEOUT -> BridgeTimeoutError",
+      "UNAUTHORIZED -> BridgeAuthError",
+      "UNKNOWN_METHOD -> BridgeUnknownMethodError",
+      "INTERNAL_ERROR -> BridgeInternalError",
+      "Other codes -> BridgeKernelError"
+    ],
+    "rules": [
+      "Bridge must not invent domain errors",
+      "Original kernel code and message must be preserved"
+    ]
+  },
+  "change_policy": {
+    "allowed": [
+      "Refactors that reduce responsibilities",
+      "Improved logging",
+      "Better CLI UX without changing semantics",
+      "Adding tests",
+      "Documentation updates"
+    ],
+    "forbidden_in_v1": [
+      "Adding new commands",
+      "Adding filesystem access",
+      "Adding business logic",
+      "Bypassing kernel tools",
+      "Persisting state"
+    ],
+    "requires_version_bump": [
+      "CLI interface changes",
+      "Command behavior changes",
+      "Transport changes",
+      "Error mapping changes"
+    ]
+  },
+  "violation_policy": {
+    "text": "Any rule violation is treated as a bridge bug and must be fixed before new features are added."
+  }
+}

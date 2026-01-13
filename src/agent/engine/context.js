@@ -1,5 +1,5 @@
 /**
- * Universal Agent — Context Subsystem (v1)
+ * Universal Agent — Context Subsystem (v1.1)
  *
  * Responsible for creating and managing the RunContext object,
  * which holds all stable and mutable state for a single recipe run.
@@ -13,6 +13,7 @@
  * - validation info
  * - backup paths
  * - logs and errors
+ * - GLOBAL ignore rules (from .gitignore)
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -72,9 +73,38 @@ export function createContext(options = {}) {
         logs: [],
         errors: [],
 
+        // GLOBAL ignore rules (propagated from scan step)
+        ignore: null,
+
         // per-step scratchpad
         state: {}
     };
+}
+
+/**
+ * Check whether a file should be ignored based on global ignore rules.
+ * This is intentionally simple (v1): prefix-based matching.
+ *
+ * @param {object} context
+ * @param {string} relativePath
+ * @returns {boolean}
+ */
+export function isIgnored(context, relativePath) {
+    if (!context?.ignore?.patterns) {
+        return false;
+    }
+
+    return context.ignore.patterns.some(pattern => {
+        const normalized = pattern
+            .replace("/**", "")
+            .replace("*", "")
+            .replace(/\/$/, "");
+
+        return (
+            relativePath === normalized ||
+            relativePath.startsWith(normalized + "/")
+        );
+    });
 }
 
 /**

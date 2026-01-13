@@ -1,0 +1,99 @@
+{
+  "project": "mcp-bridge",
+  "milestone": "server-bridge-adjustment",
+  "phase": "bridge-stabilization",
+  "version": "v0.1",
+  "date": "2025-12-27",
+  "status": "PLANNED",
+  "summary": {
+    "goal": "Stabilize and document mcp-bridge as a pure adapter and transport layer between UI/agents and the MCP Server kernel.",
+    "result": "Bridge interfaces frozen, boundaries enforced, errors normalized, lifecycle documented, and basic flows tested."
+  },
+  "planned_steps": [
+    {
+      "id": "brg-1",
+      "title": "Freeze public interfaces",
+      "status": "pending",
+      "description": "Inventory all HTTP/WS/MCP-facing endpoints and message flows and mark them as v1 surface.",
+      "outputs": ["docs/interfaces.md"]
+    },
+    {
+      "id": "brg-2",
+      "title": "Clarify responsibilities",
+      "status": "pending",
+      "description": "Refactor bridge to ensure no business logic and no filesystem access exists in bridge.",
+      "outputs": ["docs/rules.md"]
+    },
+    {
+      "id": "brg-3",
+      "title": "Normalize error mapping",
+      "status": "pending",
+      "description": "Map server ToolError into stable bridge error responses.",
+      "outputs": ["errors/BridgeError.ts"]
+    },
+    {
+      "id": "brg-4",
+      "title": "Connection lifecycle handling",
+      "status": "pending",
+      "description": "Standardize startup, reconnect, timeout, and shutdown behavior.",
+      "outputs": ["docs/lifecycle.md"]
+    },
+    {
+      "id": "brg-5",
+      "title": "Bridge smoke tests",
+      "status": "pending",
+      "description": "Add tests for basic flows: connect, list tools, call tool, handle error.",
+      "outputs": ["tests/bridge/*.test.ts"]
+    },
+    {
+      "id": "brg-6",
+      "title": "Bridge documentation",
+      "status": "pending",
+      "description": "Write documentation for bridge purpose, flows, interfaces, invariants, and configuration.",
+      "outputs": [
+        "docs/README.md",
+        "docs/architecture.md",
+        "docs/interfaces.md",
+        "docs/lifecycle.md",
+        "docs/rules.md"
+      ]
+    }
+  ],
+  "quality_gates": {
+    "interfaces_frozen": false,
+    "no_business_logic": false,
+    "no_filesystem_access": false,
+    "errors_mapped": false,
+    "lifecycle_documented": false,
+    "smoke_tests_present": false,
+    "documentation_complete": false
+  },
+  "current_state": {
+    "role": "adapter",
+    "kernel_dependency": "mcp-server v1",
+    "public_surface": "unfrozen",
+    "error_contract": "undefined",
+    "lifecycle": "implicit",
+    "tests": "none",
+    "documentation": "minimal"
+  },
+  "invariants": [
+    "Bridge contains no business logic",
+    "Bridge performs no filesystem access",
+    "Bridge does not mutate kernel state",
+    "Bridge only adapts protocol and transport",
+    "Bridge errors are derived from ToolError",
+    "Bridge must not expand kernel capabilities"
+  ],
+  "next_action": {
+    "id": "brg-1",
+    "title": "Freeze public interfaces",
+    "description": "Inventory all exposed endpoints, message shapes, and flows to define the v1 bridge surface."
+  },
+  "notes": [
+    "Bridge stabilization has not started yet",
+    "Kernel v1 is complete and green in CI",
+    "Bridge must adapt strictly to kernel rules",
+    "No new bridge features allowed during this phase"
+  ]
+}

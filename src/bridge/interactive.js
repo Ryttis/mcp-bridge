@@ -1,44 +1,58 @@
-import WebSocket from "ws";
 import readline from "readline";
+import { RpcClient } from "./rpcClient.js";
 
 export function startInteractiveBridge(serverUrl) {
-    const ws = new WebSocket(serverUrl);
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    const client = new RpcClient({ url: serverUrl, timeoutMs: 30000 });
 
-    ws.on("open", () => {
-        console.log(`✅ Connected to MCP server: ${serverUrl}`);
-        prompt();
-    });
+    let idHint = 1;
 
-    ws.on("message", (msg) => {
-        console.log("📡 Response:", msg.toString());
-        prompt();
-    });
-
-    ws.on("error", (err) => console.error("⚠️ WebSocket error:", err.message));
-    ws.on("close", () => {
-        console.log("❌ Disconnected from MCP server");
-        process.exit(0);
-    });
-
-    let id = 1;
+    (async () => {
+        try {
+            await client.connect();
+            console.log(`✅ Connected to MCP server: ${serverUrl}`);
+            prompt();
+        } catch (err) {
+            const code = err?.code || err?.kernelError?.code || "ERROR";
+            console.error(`❌ Error [${code}]: ${err.message}`);
+            process.exit(1);
+        }
+    })();
 
     function prompt() {
-        rl.question("> ", (line) => {
-
-            // 🧹 CLEAR TERMINAL COMMAND
+        rl.question("> ", async (line) => {
             const cmd = line.trim();
+
+            // clear terminal command
             if (["clear", "cls", "c"].includes(cmd)) {
-                process.stdout.write("\x1Bc"); // clears full terminal buffer
-                return prompt();               // show new prompt immediately
+                process.stdout.write("\x1Bc");
+                return prompt();
             }
 
-            // 📴 EXIT command
-            if (cmd === "exit") return process.exit(0);
+            // exit
+            if (cmd === "exit") {
+                try { client.close(); } catch {}
+                process.exit(0);
+            }
 
-            // 🧩 Normal tool call
+            // method + args (kept identical to previous behavior)
             const [method, ...args] = cmd.split(" ");
-            ws.send(JSON.stringify({ id: id++, method, params: args }));
+
+            try {
+                const result = await client.call(method, args);
+                console.log("📡 Response:", result);
+            } catch (err) {
+                const code = err?.code || err?.kernelError?.code || "ERROR";
+                console.error(`❌ Error [${code}]: ${err.message}`);
+            }
+
+            idHint++;
+            prompt();
         });
     }
+
+    process.on("SIGINT", () => {
+        try { client.close(); } catch {}
+        process.exit(0);
+    });
 }

@@ -1,0 +1,38 @@
+[
+  {
+    "order": 1,
+    "file": "mcp-bridge/src/bridge/agent/runRecipe.js",
+    "action": "Inspect and freeze current recipe runner logic to be migrated into kernel.",
+    "notes": "Source of truth for behavior."
+  },
+  {
+    "order": 2,
+    "file": "mcp-server/tools/core/runRecipe.logic.js",
+    "action": "Move recipe execution logic into kernel logic layer without changes.",
+    "notes": "Pure logic, no FS or RPC."
+  },
+  {
+    "order": 3,
+    "file": "mcp-server/tools/core/runRecipe.io.js",
+    "action": "Implement IO layer for filesystem and project access used by recipes.",
+    "notes": "Copy behavior from bridge runner."
+  },
+  {
+    "order": 4,
+    "file": "mcp-server/tools/core/runRecipe.js",
+    "action": "Create kernel tool entrypoint wiring logic and IO.",
+    "notes": "Expose as core.runRecipe."
+  },
+  {
+    "order": 5,
+    "file": "mcp-server/tools/index.js",
+    "action": "Register core.runRecipe in TOOL_REGISTRY.",
+    "notes": "Public API exposure."
+  },
+  {
+    "order": 6,
+    "file": "mcp-bridge/bridge.js",
+    "action": "Restore run-recipe CLI command to call core_runRecipe via RPC.",
+    "notes": "No local logic."
+  }
+]
