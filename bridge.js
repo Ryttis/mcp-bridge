@@ -11,9 +11,8 @@ import { startInteractiveBridge } from "./src/bridge/interactive.js";
 import { listTools } from "./src/bridge/utils.js";
 import { improveFile } from "./src/bridge/agent.js";
 import { rpcCallOnce } from "./src/bridge/rpcClient.js";
-
-// ✅ LOCAL AGENT IMPORT (NEW)
 import { runRecipeLocal } from "./src/agent/runRecipeLocal.js";
+import MCP_PROTOCOL from "./src/bridge/protocol.js";
 
 const SERVER_URL = "ws://localhost:4000";
 const TOKEN = process.env.AUTH_TOKEN;
@@ -21,7 +20,6 @@ const FULL_URL = `${SERVER_URL}?token=${TOKEN}`;
 
 const [command, ...rest] = process.argv.slice(2);
 
-// AUTH TOKEN is only required for kernel/server commands
 const requiresKernel = ["analyze", "run-recipe"];
 
 if (requiresKernel.includes(command) && !TOKEN) {
@@ -32,9 +30,6 @@ if (requiresKernel.includes(command) && !TOKEN) {
 (async () => {
     switch (command) {
 
-        // ─────────────────────────────────────────────
-        // 🧠 Analyze a file (KERNEL)
-        // ─────────────────────────────────────────────
         case "analyze": {
             const target = rest[0];
             if (!target) {
@@ -62,9 +57,6 @@ if (requiresKernel.includes(command) && !TOKEN) {
             return;
         }
 
-        // ─────────────────────────────────────────────
-        // 🧪 Run recipe (KERNEL / SERVER)
-        // ─────────────────────────────────────────────
         case "run-recipe": {
             const recipe = rest[0];
             const target = rest[1] || ".";
@@ -94,9 +86,6 @@ if (requiresKernel.includes(command) && !TOKEN) {
             return;
         }
 
-        // ─────────────────────────────────────────────
-        // 🧠 Run recipe LOCALLY (AGENT + FILESYSTEM)
-        // ─────────────────────────────────────────────
         case "run-recipe-local": {
             const recipe = rest[0];
             const target = rest[1] || ".";
@@ -123,9 +112,6 @@ if (requiresKernel.includes(command) && !TOKEN) {
             return;
         }
 
-        // ─────────────────────────────────────────────
-        // 🔧 AI improve file (LOCAL + KERNEL MIX)
-        // ─────────────────────────────────────────────
         case "improve": {
             const target = rest[0];
             const note = rest.slice(1).join(" ") || "Refactor for clarity and maintainability.";
@@ -147,9 +133,6 @@ if (requiresKernel.includes(command) && !TOKEN) {
             return;
         }
 
-        // ─────────────────────────────────────────────
-        // 💬 Default — interactive kernel mode
-        // ─────────────────────────────────────────────
         default: {
             console.log("🧩 MCP Interactive Bridge");
             console.log("Commands:");
@@ -157,6 +140,9 @@ if (requiresKernel.includes(command) && !TOKEN) {
             console.log("  improve <file> [text]          (local + kernel)");
             console.log("  run-recipe <name> [path]       (kernel)");
             console.log("  run-recipe-local <name> [path] (local agent)");
+            console.log(
+                `[MCP] Protocol ${MCP_PROTOCOL.name} ${MCP_PROTOCOL.version} loaded in ${MCP_PROTOCOL.mode} mode`
+            );
             console.log();
 
             if (TOKEN) {
