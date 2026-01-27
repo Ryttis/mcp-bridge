@@ -18,6 +18,7 @@
     "dotenv": "^17.2.3",
     "fast-glob": "^3.3.3",
     "js-yaml": "^4.1.1",
+    "mcp-memory": "file:../mcp-memory",
     "mcp-protocol": "file:../mcp-protocol",
     "openai": "^6.15.0",
     "uuid": "^13.0.0",

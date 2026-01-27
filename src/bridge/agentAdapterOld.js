@@ -1,4 +1,4 @@
-// src/bridge/agentAdapter.js
+// src/bridge/agentAdapterOld.js
 /**
  * Adapter-only placeholder.
  * Agent and AI logic have been moved to MCP Server kernel.
