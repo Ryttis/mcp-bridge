@@ -11,7 +11,9 @@
 import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
+import { validateRecipe as validateProtocolRecipe } from "mcp-protocol";
 import { loadPrimitiveStep } from "../steps/loader.js";
+import { validateRecipe as validateLocalRecipe } from "./validator.js";
 
 /**
  * Resolve recipe name or path to an absolute YAML file path.
@@ -56,6 +58,15 @@ export function loadRecipe(recipeNameOrPath) {
 
     if (!rawData || !Array.isArray(rawData.steps)) {
         throw new Error("Invalid recipe format: missing steps[]");
+    }
+
+    validateLocalRecipe(rawData);
+
+    const protocolValidation = validateProtocolRecipe(rawData);
+    if (!protocolValidation.ok) {
+        throw new Error(
+            `Protocol recipe validation failed: ${JSON.stringify(protocolValidation.errors)}`
+        );
     }
 
     // ─────────────────────────────────────────────

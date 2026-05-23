@@ -13,4 +13,3 @@ steps:
       - "**/node_modules/**"
 
   - type: readFiles
-    files: "{{selectedFiles}}"

@@ -5,6 +5,7 @@
  *  - primitives
  *  - ai
  *  - scanner
+ *  - memory
  *
  * Supports ALL real-world export styles:
  *  - named export with run():        export const foo = { run() {} }
@@ -15,6 +16,7 @@
 import * as primitives from "./primitives/index.js";
 import * as ai from "./ai/index.js";
 import * as scanner from "./scanner/index.js";
+import * as memory from "./memory/index.js";
 
 /**
  * Normalize whatever we got into an object that has a .run() function.
@@ -55,6 +57,9 @@ export function loadPrimitiveStep(id) {
 
         // ai
         ai[id] ||
+
+        // memory
+        memory[id] ||
 
         // scanner (named export)
         scanner[id] ||

@@ -1,0 +1,29 @@
+{
+  "language": "lt-LT",
+  "callerName": "Rytis",
+  "car": {
+    "make": "BMW",
+    "model": "3 Series",
+    "year": 2012,
+    "engine": "2.0 diesel",
+    "vin": ""
+  },
+  "parts": [
+    {
+      "name": "front left headlight",
+      "notes": "xenon, adaptive if available"
+    }
+  ],
+  "sellers": [
+    {
+      "name": "Seller 1",
+      "phone": "+37060000000",
+      "source": "manual"
+    }
+  ],
+  "constraints": {
+    "cityPreference": "Vilnius",
+    "maxPrice": null,
+    "pickupOnly": true
+  }
+}

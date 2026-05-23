@@ -1,5 +1,6 @@
 // src/bridge/rpcClient.js
 import WebSocket from "ws";
+import { assertRpcAllowed } from "../agent/kernel/rpcPolicy.js";
 
 /**
  * Base bridge error type (adapter-only).
@@ -77,6 +78,8 @@ export function mapKernelError(kernelError) {
  * Make a single JSON-RPC call and close the socket (CLI-friendly).
  */
 export async function rpcCallOnce({ url, method, params, timeoutMs = 30000 }) {
+    assertRpcAllowed(method, { ...process.env, MCP_SERVER_URL: url });
+
     return new Promise((resolve, reject) => {
         const ws = new WebSocket(url);
         const id = 1;
@@ -216,6 +219,8 @@ export class RpcClient {
     }
 
     async call(method, params) {
+        assertRpcAllowed(method, { ...process.env, MCP_SERVER_URL: this.url });
+
         if (!this.connected) await this.connect();
 
         const id = this.nextId++;

@@ -1,9 +1,21 @@
 name: "doc-header"
 steps:
   - id: selectFiles
+    type: selectFiles
+    patterns:
+      - "src/**/*.js"
+    ignore:
+      - "node_modules/**"
+      - "**/node_modules/**"
   - id: readFiles
+    type: readFiles
   - id: backupInit
+    type: backupInit
   - id: backupFiles
+    type: backupFiles
   - id: docHeaderTransform
+    type: docHeaderTransform
   - id: validateDocOnly
+    type: validateDocOnly
   - id: writeFiles
+    type: writeFiles

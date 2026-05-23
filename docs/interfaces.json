@@ -41,6 +41,38 @@
       "stability": "v1-frozen"
     },
     {
+      "name": "voice-test-call",
+      "usage": "node bridge.js voice-test-call --phone <phone> (--dry-run|--call) [--response-mode gather|record] [--json]",
+      "args": ["--phone", "--dry-run|--call", "--response-mode?", "--json?"],
+      "description": "Submit an outbound voice test call request through mcp-server. Real-call intent requires --call.",
+      "flow": "bridge -> MCP server -> voice.outboundCall -> console output",
+      "stability": "experimental"
+    },
+    {
+      "name": "voice-status",
+      "usage": "node bridge.js voice-status --call-id <callId> [--json]",
+      "args": ["--call-id", "--json?"],
+      "description": "Fetch mock voice call status through mcp-server.",
+      "flow": "bridge -> MCP server -> voice.getCallStatus -> console output",
+      "stability": "experimental"
+    },
+    {
+      "name": "voice-result",
+      "usage": "node bridge.js voice-result --call-id <callId> [--json]",
+      "args": ["--call-id", "--json?"],
+      "description": "Fetch mock voice call result through mcp-server.",
+      "flow": "bridge -> MCP server -> voice.getCallResult -> console output",
+      "stability": "experimental"
+    },
+    {
+      "name": "voice-transcribe",
+      "usage": "node bridge.js voice-transcribe --call-id <callId> [--json]",
+      "args": ["--call-id", "--json?"],
+      "description": "Fetch manual transcription readiness state through mcp-server. Current provider default is disabled.",
+      "flow": "bridge -> MCP server -> voice.transcribe -> console output",
+      "stability": "experimental"
+    },
+    {
       "name": "interactive",
       "usage": "node bridge.js",
       "args": [],
